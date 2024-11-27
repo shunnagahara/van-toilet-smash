@@ -22,19 +22,11 @@ const SpTop: React.FC = () => {
     <div className="relative h-screen w-full">
       {/* 地図コンポーネントを画面いっぱいに配置 */}
       <div className="absolute inset-0">
-        <MapComponent mapboxAccessToken={MAPBOX_TOKEN} />
+        <MapComponent mapboxAccessToken={MAPBOX_TOKEN} onMarkerClick={toggleSheet} />
       </div>
 
       {/* 言語切り替えボタン */}
       <LanguageToggle />
-
-      {/* ページ上部にボタンを配置 */}
-      <button
-        className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg z-20"
-        onClick={toggleSheet}
-      >
-        {currentLanguage === 'ja' ? 'ボトムシートを開く' : 'Open Bottom Sheet'}
-      </button>
 
       {/* ModalBottomSheetコンポーネントを表示 */}
       <div className="z-30 relative">

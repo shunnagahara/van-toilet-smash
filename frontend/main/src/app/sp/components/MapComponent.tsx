@@ -11,6 +11,7 @@ interface MapComponentProps {
     zoom: number;
   };
   mapboxAccessToken: string | undefined;
+  onMarkerClick?: () => void;
 }
 
 const VANCOUVER_LOCATIONS = [
@@ -40,7 +41,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
     latitude: 49.2827,
     zoom: 13
   },
-  mapboxAccessToken 
+  mapboxAccessToken,
+  onMarkerClick 
 }) => {
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
@@ -68,6 +70,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             latitude={location.latitude}
             longitude={location.longitude}
             anchor="bottom"
+            onClick={onMarkerClick}
           >
             <div className="relative w-10 h-10 cursor-pointer transform hover:scale-110 transition-transform">
               {/* 赤いマーカー背景 */}
