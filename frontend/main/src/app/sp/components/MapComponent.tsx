@@ -13,9 +13,9 @@ interface MapComponentProps {
 
 const MapComponent: React.FC<MapComponentProps> = ({ 
   initialViewState = {
-    longitude: 139.7673068,  // 東京駅の経度
-    latitude: 35.6809591,    // 東京駅の緯度
-    zoom: 14
+    longitude: -123.1207,  // バンクーバーダウンタウンの経度
+    latitude: 49.2827,     // バンクーバーダウンタウンの緯度
+    zoom: 13              // 都市の中心部が見やすいズームレベル
   },
   mapboxAccessToken 
 }) => {
