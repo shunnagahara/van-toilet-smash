@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import type { Location } from "./MapComponent";
+import type { Location } from "@/types/location";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
-
+import ImageCarousel from "./ImageCarousel";
 interface ModalBottomSheetProps {
   isOpen: boolean;
   toggleSheet: () => void;
@@ -76,20 +76,18 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 閉じるボタン */}
       <button
         onClick={handleClose}
-        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
         aria-label={currentLanguage === 'ja' ? '閉じる' : 'Close'}
       >
         <span className="material-icons text-gray-600 text-lg">close</span>
       </button>
 
-      {/* 下向き矢印ボタン（C状態の時のみ表示） */}
       {sheetState === "C" && (
         <button
           onClick={handleCollapseToB}
-          className="absolute top-4 left-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+          className="absolute top-4 left-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 z-10"
         >
           <span className="material-icons">arrow_downward</span>
         </button>
@@ -101,8 +99,9 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         </div>
         
         {location ? (
-          <div>
-            <h2 className="text-xl font-semibold mb-2">{location.name}</h2>
+          <div className="space-y-4">
+            
+            <h2 className="text-xl font-semibold">{location.name}</h2>
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <span className="material-icons text-gray-500">location_on</span>
@@ -128,6 +127,11 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
               <div className="mt-4">
                 <p className="text-gray-700">{location.description}</p>
               </div>
+
+              {location.images && location.images.length > 0 && (
+                <ImageCarousel images={location.images} />
+              )}
+
             </div>
           </div>
         ) : (

@@ -3,16 +3,7 @@ import Map, { Marker } from 'react-map-gl';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import 'mapbox-gl/dist/mapbox-gl.css';
-
-export interface Location {
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  description?: string;
-  rating?: number;
-  isOpen?: boolean;
-}
+import { Location } from '@/types/location';
 
 interface MapComponentProps {
   initialViewState?: {
@@ -32,26 +23,21 @@ const VANCOUVER_LOCATIONS: Location[] = [
     longitude: -123.1067,
     description: "Historic Gastown地区の公衆トイレ。24時間利用可能。",
     rating: 4.2,
-    isOpen: true
+    isOpen: true,
+    images: [
+      {
+        id: "1",
+        url: "https://tgoysscvgojhzejawwpj.supabase.co/storage/v1/object/public/toilet-images/images.jpeg",
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "2",
+        url: "https://tgoysscvgojhzejawwpj.supabase.co/storage/v1/object/public/toilet-images/8f3e39adc40efd3b6234a7b3ce7c21977447f8e2.jpg",
+        createdAt: new Date().toISOString()
+      },
+    ]
   },
-  {
-    id: 2,
-    name: "Yaletown Community Center",
-    latitude: 49.2754,
-    longitude: -123.1216,
-    description: "Yaletown Community Center内のトイレ。清潔で使いやすい施設。",
-    rating: 4.5,
-    isOpen: true
-  },
-  {
-    id: 3,
-    name: "Coal Harbour Rest Area",
-    latitude: 49.2897,
-    longitude: -123.1226,
-    description: "シーウォールに面した公共トイレ。観光客も利用可能。",
-    rating: 3.8,
-    isOpen: true
-  }
+  // ... 他のロケーション
 ];
 
 const MapComponent: React.FC<MapComponentProps> = ({ 

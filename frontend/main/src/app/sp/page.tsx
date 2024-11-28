@@ -5,7 +5,7 @@ import ModalBottomSheet from "./components/ModalBottomSheet";
 import Footer from "./components/Footer";
 import MapComponent from "./components/MapComponent";
 import LanguageToggle from "./components/LanguageToggle";
-import type { Location } from "./components/MapComponent";
+import type { Location } from "@/types/location";
 
 const SpTop: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
