@@ -4,6 +4,16 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+export interface Location {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  description?: string;
+  rating?: number;
+  isOpen?: boolean;
+}
+
 interface MapComponentProps {
   initialViewState?: {
     longitude: number;
@@ -11,27 +21,36 @@ interface MapComponentProps {
     zoom: number;
   };
   mapboxAccessToken: string | undefined;
-  onMarkerClick?: () => void;
+  onMarkerClick?: (location: Location) => void;
 }
 
-const VANCOUVER_LOCATIONS = [
+const VANCOUVER_LOCATIONS: Location[] = [
   {
     id: 1,
-    name: "Gastown",
+    name: "Gastown Public Toilet",
     latitude: 49.2827,
-    longitude: -123.1067
+    longitude: -123.1067,
+    description: "Historic Gastown地区の公衆トイレ。24時間利用可能。",
+    rating: 4.2,
+    isOpen: true
   },
   {
     id: 2,
-    name: "Yaletown",
+    name: "Yaletown Community Center",
     latitude: 49.2754,
-    longitude: -123.1216
+    longitude: -123.1216,
+    description: "Yaletown Community Center内のトイレ。清潔で使いやすい施設。",
+    rating: 4.5,
+    isOpen: true
   },
   {
     id: 3,
-    name: "Coal Harbour",
+    name: "Coal Harbour Rest Area",
     latitude: 49.2897,
-    longitude: -123.1226
+    longitude: -123.1226,
+    description: "シーウォールに面した公共トイレ。観光客も利用可能。",
+    rating: 3.8,
+    isOpen: true
   }
 ];
 
@@ -70,14 +89,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
             latitude={location.latitude}
             longitude={location.longitude}
             anchor="bottom"
-            onClick={onMarkerClick}
+            onClick={() => onMarkerClick?.(location)}
           >
             <div className="relative w-10 h-10 cursor-pointer transform hover:scale-110 transition-transform">
-              {/* 赤いマーカー背景 */}
               <div className="absolute inset-0 bg-red-500 rounded-full" />
-              {/* 中心の白い円 - insetの値を小さくして赤枠を細く */}
               <div className="absolute inset-[2px] bg-white rounded-full" />
-              {/* トイレアイコン - テキストサイズを大きく */}
               <div className="absolute inset-0 flex items-center justify-center text-base">
                 🚽
               </div>

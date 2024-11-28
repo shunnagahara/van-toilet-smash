@@ -1,42 +1,45 @@
 "use client";
 
 import React, { useState } from "react";
+import type { Location } from "./MapComponent";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
   toggleSheet: () => void;
+  location?: Location;
 }
 
 type SheetState = "A" | "B" | "C";
 
-const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet }) => {
+const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location }) => {
   const [sheetState, setSheetState] = useState<SheetState>("A");
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
-  // スワイプ開始位置を記録
+  // Previous touch handlers remain the same...
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.touches[0].clientY);
     setTouchEnd(e.touches[0].clientY);
   };
 
-  // スワイプの移動位置を更新
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.touches[0].clientY);
   };
 
-  // スワイプ終了時に状態遷移を判定
   const handleTouchEnd = () => {
     const swipeDistance = touchStart - touchEnd;
-    const minSwipeDistance = 50; // スワイプ判定のための最小移動距離
+    const minSwipeDistance = 50;
 
-    if (swipeDistance > minSwipeDistance) { // 上方向スワイプ
+    if (swipeDistance > minSwipeDistance) {
       if (sheetState === "A") {
         setSheetState("B");
       } else if (sheetState === "B") {
         setSheetState("C");
       }
-    } else if (swipeDistance < -minSwipeDistance) { // 下方向スワイプ
+    } else if (swipeDistance < -minSwipeDistance) {
       if (sheetState === "C") {
         setSheetState("B");
       } else if (sheetState === "B") {
@@ -45,7 +48,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   };
 
-  // 状態に応じたheightクラスを返す
   const getHeightClass = () => {
     switch (sheetState) {
       case "A":
@@ -59,13 +61,11 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   };
 
-  // シートを閉じる時の処理
   const handleClose = () => {
     setSheetState("A");
     toggleSheet();
   };
 
-  // Cの状態からBに戻る処理
   const handleCollapseToB = () => {
     setSheetState("B");
   };
@@ -79,7 +79,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 下向き矢印ボタン（C状態の時のみ表示） */}
       {sheetState === "C" && (
         <button
           onClick={handleCollapseToB}
@@ -93,17 +92,50 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         <div className="flex justify-center">
           <div className="w-12 h-1 bg-gray-300 rounded-full mb-4"></div>
         </div>
-        <h2 className="text-lg font-semibold text-center">ボトムシート内容</h2>
-        <p className="text-center mt-2 text-gray-500">
-          {sheetState === "A" && "上にスワイプして展開できます"}
-          {sheetState === "B" && "上にスワイプしてフル表示、下にスワイプして縮小できます"}
-          {sheetState === "C" && "下にスワイプまたは↓ボタンで縮小できます"}
-        </p>
+        
+        {location ? (
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{location.name}</h2>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <span className="material-icons text-gray-500">location_on</span>
+                <p className="text-gray-600">{`${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`}</p>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <span className="material-icons text-gray-500">star</span>
+                <p className="text-gray-600">{location.rating?.toFixed(1)} / 5.0</p>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <span className="material-icons text-gray-500">
+                  {location.isOpen ? 'check_circle' : 'cancel'}
+                </span>
+                <p className="text-gray-600">
+                  {location.isOpen ? 
+                    (currentLanguage === 'ja' ? '営業中' : 'Open') : 
+                    (currentLanguage === 'ja' ? '営業時間外' : 'Closed')}
+                </p>
+              </div>
+
+              <div className="mt-4">
+                <p className="text-gray-700">{location.description}</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">
+            {currentLanguage === 'ja' ? 
+              'マーカーを選択してください' : 
+              'Please select a marker'}
+          </p>
+        )}
+
         <button
-          className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg w-full"
+          className="mt-6 bg-red-500 text-white px-4 py-2 rounded-lg w-full"
           onClick={handleClose}
         >
-          閉じる
+          {currentLanguage === 'ja' ? '閉じる' : 'Close'}
         </button>
       </div>
     </div>
