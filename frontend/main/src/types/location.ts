@@ -4,13 +4,18 @@ export interface LocationImage {
   createdAt: string;
 }
 
+interface LocalizedContent {
+  name: string;
+  description: string;
+}
+
 export interface Location {
   id: number;
-  name: string;
   latitude: number;
   longitude: number;
-  description?: string;
   rating?: number;
   isOpen?: boolean;
   images?: LocationImage[];
+  ja: LocalizedContent;
+  en: LocalizedContent;
 }

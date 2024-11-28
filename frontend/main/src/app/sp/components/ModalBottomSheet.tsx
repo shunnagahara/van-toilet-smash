@@ -93,46 +93,52 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         </button>
       )}
 
-      <div className="p-4">
+      <div className="p-4 overflow-y-auto max-h-full">
         <div className="flex justify-center">
           <div className="w-12 h-1 bg-gray-300 rounded-full mb-4"></div>
         </div>
         
         {location ? (
-          <div className="space-y-4">
-            
-            <h2 className="text-xl font-semibold">{location.name}</h2>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <span className="material-icons text-gray-500">location_on</span>
-                <p className="text-gray-600">{`${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`}</p>
-              </div>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">{location[currentLanguage].name}</h2>
               
-              <div className="flex items-center space-x-2">
-                <span className="material-icons text-gray-500">star</span>
-                <p className="text-gray-600">{location.rating?.toFixed(1)} / 5.0</p>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <span className="material-icons text-gray-500">location_on</span>
+                  <p className="text-gray-600">{`${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`}</p>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <span className="material-icons text-gray-500">star</span>
+                  <p className="text-gray-600">{location.rating?.toFixed(1)} / 5.0</p>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <span className="material-icons text-gray-500">
+                    {location.isOpen ? 'check_circle' : 'cancel'}
+                  </span>
+                  <p className="text-gray-600">
+                    {location.isOpen ? 
+                      (currentLanguage === 'ja' ? '営業中' : 'Open') : 
+                      (currentLanguage === 'ja' ? '営業時間外' : 'Closed')}
+                  </p>
+                </div>
               </div>
-              
-              <div className="flex items-center space-x-2">
-                <span className="material-icons text-gray-500">
-                  {location.isOpen ? 'check_circle' : 'cancel'}
-                </span>
-                <p className="text-gray-600">
-                  {location.isOpen ? 
-                    (currentLanguage === 'ja' ? '営業中' : 'Open') : 
-                    (currentLanguage === 'ja' ? '営業時間外' : 'Closed')}
-                </p>
-              </div>
-
-              <div className="mt-4">
-                <p className="text-gray-700">{location.description}</p>
-              </div>
-
-              {location.images && location.images.length > 0 && (
-                <ImageCarousel images={location.images} />
-              )}
-
             </div>
+
+            <div className="py-2">
+              <p className="text-gray-700">{location[currentLanguage].description}</p>
+            </div>
+
+            {location.images && location.images.length > 0 && (
+              <div className="pt-2">
+                <h3 className="text-lg font-medium mb-3">
+                  {currentLanguage === 'ja' ? '施設写真' : 'Facility Photos'}
+                </h3>
+                <ImageCarousel images={location.images} />
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-center text-gray-500">
