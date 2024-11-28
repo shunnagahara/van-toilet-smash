@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import type { Location } from "./MapComponent";
 import { useSelector } from "react-redux";
@@ -19,7 +17,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const [touchEnd, setTouchEnd] = useState(0);
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
-  // Previous touch handlers remain the same...
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.touches[0].clientY);
     setTouchEnd(e.touches[0].clientY);
@@ -79,6 +76,16 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      {/* 閉じるボタン */}
+      <button
+        onClick={handleClose}
+        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+        aria-label={currentLanguage === 'ja' ? '閉じる' : 'Close'}
+      >
+        <span className="material-icons text-gray-600 text-lg">close</span>
+      </button>
+
+      {/* 下向き矢印ボタン（C状態の時のみ表示） */}
       {sheetState === "C" && (
         <button
           onClick={handleCollapseToB}
@@ -130,13 +137,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
               'Please select a marker'}
           </p>
         )}
-
-        <button
-          className="mt-6 bg-red-500 text-white px-4 py-2 rounded-lg w-full"
-          onClick={handleClose}
-        >
-          {currentLanguage === 'ja' ? '閉じる' : 'Close'}
-        </button>
       </div>
     </div>
   );
