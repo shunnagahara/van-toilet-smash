@@ -4,5 +4,33 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+      - .:/usr/src/app
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/toiletsmash
+      - PYTHONPATH=/usr/src/app
+    depends_on:
+      - db
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  db:
+    image: postgis/postgis:15-3.3
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=toiletsmash
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  init-db:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/toiletsmash
+      - PYTHONPATH=/usr/src/app
+    depends_on:
+      - db
+    command: ["python", "-m", "app.scripts.init_db"]
+
+volumes:
+  postgres_data:
