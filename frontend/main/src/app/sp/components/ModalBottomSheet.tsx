@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import ImageCarousel from "./ImageCarousel";
 import { addToWaitlist } from "@/repository/supabase/waitlist";
-import { checkForMatch, subscribeToMatching } from "@/repository/supabase/matching";
+import { checkForMatch, subscribeToMatching, cancelMatching } from "@/repository/supabase/matching";
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -17,7 +17,6 @@ interface ModalBottomSheetProps {
 }
 
 type SheetState = "A" | "B" | "C";
-type BattleResult = "win" | "lose" | null;
 
 const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location }) => {
   const [sheetState, setSheetState] = useState<SheetState>("A");
@@ -27,48 +26,20 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     isWaiting: false,
     error: undefined,
   });
-  // 新しいstate
   const [matchingState] = useState<MatchingState>({
     isMatched: false,
   });
   const [userId, setUserId] = useState<string>("");
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [battleResult, setBattleResult] = useState<BattleResult>(null);
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   const router = useRouter();
 
-  // マッチング後のカウントダウンと勝敗決定
   useEffect(() => {
-    if (matchingState.isMatched && countdown === null) {
-      setCountdown(5);
-    }
-
-    if (countdown !== null && countdown > 0) {
-      const timer = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-
-    if (countdown === 0 && battleResult === null) {
-      // ランダムで勝敗を決定
-      const result = Math.random() < 0.5 ? "win" : "lose";
-      setBattleResult(result);
-    }
-  }, [matchingState.isMatched, countdown, battleResult]);
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
     let channel: RealtimeChannel;
   
     const checkForMatchWrapper = async () => {
-      console.log('Checking for match - userId:', userId);
       const { data: matching, error } = await checkForMatch(userId);
-      console.log('Check result - matching:', matching, 'error:', error);
   
       if (error) {
-        console.error('Matching check error:', error);
         setMatchState(prev => ({ 
           ...prev, 
           error: error instanceof Error ? error.message : '予期せぬエラーが発生しました'
@@ -82,7 +53,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     };
   
     const handleMatchFound = (matching: MatchingEntry) => {
-      console.log('Match found!', matching);
       const opponentLocationId = matching.player1_id === userId 
         ? matching.player2_location_id 
         : matching.player1_location_id;
@@ -91,36 +61,43 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         ? matching.player1_location_id
         : matching.player2_location_id;
     
-      // バトルページに遷移
       router.push(`/sp/battle?playerLocationId=${playerLocationId}&opponentLocationId=${opponentLocationId}`);
     };
   
     if (matchState.isWaiting && userId) {
-      console.log('Starting match checking for user:', userId);
-      intervalId = setInterval(checkForMatchWrapper, 1000);
-  
-      // リアルタイム購読のセットアップ
-      channel = subscribeToMatching(userId, (matching: MatchingEntry) => {
-        console.log('Realtime match notification received:', matching);
-        handleMatchFound(matching);
-      });
-  
-      // マッチング状態の初期チェック
+      const intervalId = setInterval(checkForMatchWrapper, 1000);
+      
+      channel = subscribeToMatching(userId, handleMatchFound);
+      
       checkForMatchWrapper();
-    }
-  
-    return () => {
-      if (intervalId) {
-        console.log('Clearing interval');
-        clearInterval(intervalId);
-      }
-      if (channel) {
-        console.log('Unsubscribing from channel');
-        channel.unsubscribe();
-      }
-    };
-  }, [matchState.isWaiting, userId]);
 
+      return () => {
+        clearInterval(intervalId);
+        channel?.unsubscribe();
+      };
+    }
+  }, [matchState.isWaiting, userId, router]);
+
+  const handleCancelMatching = async () => {
+    if (!userId) return;
+
+    try {
+      await cancelMatching(userId);
+      setMatchState({ isWaiting: false });
+      setUserId("");
+    } catch (error) {
+      console.error('Error canceling match:', error);
+      setMatchState(prev => ({
+        ...prev,
+        error: currentLanguage === 'ja' ? 
+          'キャンセルに失敗しました' : 
+          'Failed to cancel matching'
+      }));
+    }
+  };
+
+
+  // タッチイベントハンドラー
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.touches[0].clientY);
     setTouchEnd(e.touches[0].clientY);
@@ -135,30 +112,11 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     const minSwipeDistance = 50;
 
     if (swipeDistance > minSwipeDistance) {
-      if (sheetState === "A") {
-        setSheetState("B");
-      } else if (sheetState === "B") {
-        setSheetState("C");
-      }
+      if (sheetState === "A") setSheetState("B");
+      else if (sheetState === "B") setSheetState("C");
     } else if (swipeDistance < -minSwipeDistance) {
-      if (sheetState === "C") {
-        setSheetState("B");
-      } else if (sheetState === "B") {
-        setSheetState("A");
-      }
-    }
-  };
-
-  const getHeightClass = () => {
-    switch (sheetState) {
-      case "A":
-        return "h-1/5";
-      case "B":
-        return "h-1/2";
-      case "C":
-        return "h-full";
-      default:
-        return "h-1/5";
+      if (sheetState === "C") setSheetState("B");
+      else if (sheetState === "B") setSheetState("A");
     }
   };
 
@@ -176,19 +134,15 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
 
     try {
       const { data, error, userId: newUserId } = await addToWaitlist(location.id);
-      console.log('Waitlist response - data:', data, 'error:', error, 'userId:', newUserId);
 
       if (error) {
-        console.error('Waitlist error:', error);
         setMatchState({ isWaiting: false, error: error.message });
         return;
       }
 
       setUserId(newUserId);
       setMatchState({ isWaiting: true });
-      console.log('Successfully added to waitlist with userId:', newUserId);
     } catch (error) {
-      console.error('Battle request error:', error);
       setMatchState({ 
         isWaiting: false, 
         error: currentLanguage === 'ja' ? 
@@ -198,130 +152,153 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   };
 
-  const renderContent = () => {
-    console.log('Rendering content');
-    console.log('matchingState:', matchingState);
-    console.log('matchState:', matchState);
-
-    if (matchState.isWaiting) {
-      return (
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="text-lg font-medium">
-            {currentLanguage === 'ja' ? 
-              '対戦相手を待っています...' : 
-              'Waiting for an opponent...'}
-          </p>
-        </div>
-      );
+  const getHeightClass = () => {
+    switch (sheetState) {
+      case "A": return "h-1/5";
+      case "B": return "h-1/2";
+      case "C": return "h-full";
+      default: return "h-1/5";
     }
+  };
 
-    if (matchState.error) {
-      return (
-        <div className="text-center text-red-500">
-          <p>{matchState.error}</p>
-        </div>
-      );
-    }
+  const MatchingNotification = () => {
+    const message = currentLanguage === 'ja' 
+      ? '対戦相手を探しています... しばらくお待ちください...' 
+      : 'Looking for an opponent... Please Wait for seconds... ';
 
     return (
-      <div className="space-y-6">
-        {/* 既存のトイレ情報表示部分 */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">{location?.[currentLanguage].name}</h2>
-          
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2">
-              <span className="material-icons text-gray-500">location_on</span>
-              <p className="text-gray-600">
-                {`${location?.latitude.toFixed(4)}, ${location?.longitude.toFixed(4)}`}
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <span className="material-icons text-gray-500">star</span>
-              <p className="text-gray-600">{location?.rating?.toFixed(1)} / 5.0</p>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <span className="material-icons text-gray-500">
-                {location?.isOpen ? 'check_circle' : 'cancel'}
-              </span>
-              <p className="text-gray-600">
-                {location?.isOpen ? 
-                  (currentLanguage === 'ja' ? '営業中' : 'Open') : 
-                  (currentLanguage === 'ja' ? '営業時間外' : 'Closed')}
-              </p>
-            </div>
-          </div>
+      <div className="flex items-center overflow-hidden flex-1 mx-4">
+        {/* アニメーションのコンテナ */}
+        <div className="whitespace-nowrap animate-marquee">
+          {message}
         </div>
-
-        <div className="py-2">
-          <p className="text-gray-700">{location?.[currentLanguage].description}</p>
-        </div>
-
-        {/* バトルボタンの追加 */}
-        <button
-          onClick={handleBattleRequest}
-          className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          {currentLanguage === 'ja' ? 
-            'このトイレで戦闘する' : 
-            'Battle at this toilet'}
-        </button>
-
-        {location?.images && location.images.length > 0 && (
-          <div className="pt-2">
-            <h3 className="text-lg font-medium mb-3">
-              {currentLanguage === 'ja' ? '施設写真' : 'Facility Photos'}
-            </h3>
-            <ImageCarousel images={location.images} />
-          </div>
-        )}
       </div>
     );
   };
 
   return (
-    <div
-      className={`fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-lg transform transition-all duration-300 ${
-        isOpen ? "translate-y-0" : "translate-y-full"
-      } ${getHeightClass()}`}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <button
-        onClick={handleClose}
-        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
-        aria-label={currentLanguage === 'ja' ? '閉じる' : 'Close'}
-      >
-        <span className="material-icons text-gray-600 text-lg">close</span>
-      </button>
+    <>
+     {/* 待機中の通知バー */}
+     {matchState.isWaiting && (
+        <div className="fixed top-0 left-0 w-full bg-blue-500 text-white h-12 z-50">
+          <div className="h-full flex items-center relative">
+            {/* キャンセルボタン - 固定位置 */}
+            <button
+              onClick={handleCancelMatching}
+              className="h-12 w-12 flex items-center justify-center hover:bg-blue-600 transition-colors flex-shrink-0"
+              aria-label={currentLanguage === 'ja' ? 'マッチングをキャンセル' : 'Cancel matching'}
+            >
+              <span className="material-icons">close</span>
+            </button>
 
-      {sheetState === "C" && (
-        <button
-          onClick={handleCollapseToB}
-          className="absolute top-4 left-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 z-10"
-        >
-          <span className="material-icons">arrow_downward</span>
-        </button>
+            {/* 横スクロールするテキスト */}
+            <MatchingNotification />
+          </div>
+        </div>
       )}
 
-      <div className="p-4 h-full overflow-hidden">
-        <div className="flex justify-center">
-          <div className="w-12 h-1 bg-gray-300 rounded-full mb-4"></div>
-        </div>
-        
-        {location ? renderContent() : (
-          <p className="text-center text-gray-500">
-            {currentLanguage === 'ja' ? 
-              'マーカーを選択してください' : 
-              'Please select a marker'}
-          </p>
+      <div
+        className={`fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-lg transform transition-all duration-300 ${
+          isOpen ? "translate-y-0" : "translate-y-full"
+        } ${getHeightClass()}`}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
+          aria-label={currentLanguage === 'ja' ? '閉じる' : 'Close'}
+        >
+          <span className="material-icons text-gray-600 text-lg">close</span>
+        </button>
+
+        {sheetState === "C" && (
+          <button
+            onClick={handleCollapseToB}
+            className="absolute top-4 left-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 z-10"
+          >
+            <span className="material-icons">arrow_downward</span>
+          </button>
         )}
+
+        <div className="p-4 h-full overflow-auto">
+          <div className="flex justify-center">
+            <div className="w-12 h-1 bg-gray-300 rounded-full mb-4"></div>
+          </div>
+          
+          {location ? (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-4">{location[currentLanguage].name}</h2>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <span className="material-icons text-gray-500">location_on</span>
+                    <p className="text-gray-600">
+                      {`${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <span className="material-icons text-gray-500">star</span>
+                    <p className="text-gray-600">{location.rating?.toFixed(1)} / 5.0</p>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <span className="material-icons text-gray-500">
+                      {location.isOpen ? 'check_circle' : 'cancel'}
+                    </span>
+                    <p className="text-gray-600">
+                      {location.isOpen ? 
+                        (currentLanguage === 'ja' ? '営業中' : 'Open') : 
+                        (currentLanguage === 'ja' ? '営業時間外' : 'Closed')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="py-2">
+                <p className="text-gray-700">{location[currentLanguage].description}</p>
+              </div>
+
+              <button
+                onClick={handleBattleRequest}
+                disabled={matchState.isWaiting}
+                className={`w-full py-3 rounded-lg transition-colors ${
+                  matchState.isWaiting
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                }`}
+              >
+                {currentLanguage === 'ja' ? 
+                  'このトイレで戦闘する' : 
+                  'Battle at this toilet'}
+              </button>
+
+              {matchState.error && (
+                <p className="text-red-500 text-center">{matchState.error}</p>
+              )}
+
+              {location.images && location.images.length > 0 && (
+                <div className="pt-2">
+                  <h3 className="text-lg font-medium mb-3">
+                    {currentLanguage === 'ja' ? '施設写真' : 'Facility Photos'}
+                  </h3>
+                  <ImageCarousel images={location.images} />
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">
+              {currentLanguage === 'ja' ? 
+                'マーカーを選択してください' : 
+                'Please select a marker'}
+            </p>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

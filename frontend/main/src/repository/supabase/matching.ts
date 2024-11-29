@@ -134,3 +134,23 @@ export const subscribeToMatching = (userId: string, onMatch: (matching: Matching
 
   return channel;
 };
+
+export const cancelMatching = async (userId: string) => {
+  try {
+    // 待機リストからユーザーを削除
+    const { error } = await supabase
+      .from('toilet_smash_waitlist')
+      .delete()
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error canceling match:', error);
+      throw error;
+    }
+
+    return { error: null };
+  } catch (error) {
+    console.error('Unexpected error in cancelMatching:', error);
+    return { error };
+  }
+};
