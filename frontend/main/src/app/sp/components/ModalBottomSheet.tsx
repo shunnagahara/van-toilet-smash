@@ -3,6 +3,7 @@ import type { Location } from "@/types/location";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import ImageCarousel from "./ImageCarousel";
+
 interface ModalBottomSheetProps {
   isOpen: boolean;
   toggleSheet: () => void;
@@ -93,7 +94,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         </button>
       )}
 
-      <div className="p-4 overflow-y-auto max-h-full">
+      <div className="p-4 h-full overflow-hidden">
         <div className="flex justify-center">
           <div className="w-12 h-1 bg-gray-300 rounded-full mb-4"></div>
         </div>
