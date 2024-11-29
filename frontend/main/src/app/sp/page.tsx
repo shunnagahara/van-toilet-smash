@@ -6,10 +6,15 @@ import Footer from "./components/Footer";
 import MapComponent from "./components/MapComponent";
 import LanguageToggle from "./components/LanguageToggle";
 import type { Location } from "@/types/location";
+import type { MatchState } from "@/types/waitlist";
 
 const SpTop: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location>();
+  const [matchState, setMatchState] = useState<MatchState>({
+    isWaiting: false,
+    error: undefined,
+  });
 
   const handleMarkerClick = (location: Location) => {
     setSelectedLocation(location);
@@ -34,13 +39,14 @@ const SpTop: React.FC = () => {
         />
       </div>
 
-      <LanguageToggle />
+      <LanguageToggle isMatchmaking={matchState.isWaiting} />
 
       <div className="z-30 relative">
         <ModalBottomSheet 
           isOpen={isOpen} 
           toggleSheet={toggleSheet}
           location={selectedLocation}
+          onMatchStateChange={setMatchState}
         />
       </div>
 

@@ -14,11 +14,12 @@ interface ModalBottomSheetProps {
   isOpen: boolean;
   toggleSheet: () => void;
   location?: Location;
+  onMatchStateChange?: (state: MatchState) => void;
 }
 
 type SheetState = "A" | "B" | "C";
 
-const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location }) => {
+const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location, onMatchStateChange }) => {
   const [sheetState, setSheetState] = useState<SheetState>("A");
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -31,6 +32,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   });
   const [userId, setUserId] = useState<string>("");
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -78,21 +80,37 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   }, [matchState.isWaiting, userId, router]);
 
+  useEffect(() => {
+    // マッチング状態が変更された時の処理
+    if (matchState.isWaiting) {
+      // 少し遅延させてアニメーションを開始
+      setTimeout(() => {
+        setIsNotificationVisible(true);
+      }, 100);
+    } else {
+      setIsNotificationVisible(false);
+    }
+  }, [matchState.isWaiting]);
+
   const handleCancelMatching = async () => {
     if (!userId) return;
-
+  
     try {
       await cancelMatching(userId);
-      setMatchState({ isWaiting: false });
+      const newState = { isWaiting: false };
+      setMatchState(newState);
+      onMatchStateChange?.(newState);
       setUserId("");
     } catch (error) {
       console.error('Error canceling match:', error);
-      setMatchState(prev => ({
-        ...prev,
+      const newState = {
+        ...matchState,
         error: currentLanguage === 'ja' ? 
           'キャンセルに失敗しました' : 
           'Failed to cancel matching'
-      }));
+      };
+      setMatchState(newState);
+      onMatchStateChange?.(newState);
     }
   };
 
@@ -131,24 +149,30 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
 
   const handleBattleRequest = async () => {
     if (!location) return;
-
+  
     try {
       const { data, error, userId: newUserId } = await addToWaitlist(location.id);
-
+  
       if (error) {
-        setMatchState({ isWaiting: false, error: error.message });
+        const newState = { isWaiting: false, error: error.message };
+        setMatchState(newState);
+        onMatchStateChange?.(newState);
         return;
       }
-
+  
       setUserId(newUserId);
-      setMatchState({ isWaiting: true });
+      const newState = { isWaiting: true };
+      setMatchState(newState);
+      onMatchStateChange?.(newState);
     } catch (error) {
-      setMatchState({ 
+      const newState = { 
         isWaiting: false, 
         error: currentLanguage === 'ja' ? 
           'エラーが発生しました' : 
           'An error occurred'
-      });
+      };
+      setMatchState(newState);
+      onMatchStateChange?.(newState);
     }
   };
 
@@ -164,11 +188,10 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const MatchingNotification = () => {
     const message = currentLanguage === 'ja' 
       ? '対戦相手を探しています... しばらくお待ちください...' 
-      : 'Looking for an opponent... Please Wait for seconds... ';
+      : 'Looking for an opponent... Please wait for seconds';
 
     return (
       <div className="flex items-center overflow-hidden flex-1 mx-4">
-        {/* アニメーションのコンテナ */}
         <div className="whitespace-nowrap animate-marquee">
           {message}
         </div>
@@ -180,7 +203,11 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     <>
      {/* 待機中の通知バー */}
      {matchState.isWaiting && (
-        <div className="fixed top-0 left-0 w-full bg-blue-500 text-white h-12 z-50">
+        <div 
+            className={`fixed w-full bg-blue-500 text-white h-12 z-50 transition-transform duration-700 ease-in-out ${
+              isNotificationVisible ? 'translate-y-0' : '-translate-y-full'
+            }`}
+          >
           <div className="h-full flex items-center relative">
             {/* キャンセルボタン - 固定位置 */}
             <button
