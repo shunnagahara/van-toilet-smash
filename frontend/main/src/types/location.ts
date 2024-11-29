@@ -1,7 +1,7 @@
 export interface LocationImage {
   id: string;
   url: string;
-  createdAt: string;
+  created_at: string;  // created_atに変更
 }
 
 interface LocalizedContent {
@@ -13,8 +13,7 @@ export interface Location {
   id: number;
   latitude: number;
   longitude: number;
-  rating?: number;
-  isOpen?: boolean;
+  is_open: boolean;    // isOpenからis_openに変更
   images?: LocationImage[];
   ja: LocalizedContent;
   en: LocalizedContent;

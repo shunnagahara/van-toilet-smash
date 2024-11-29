@@ -1,6 +1,9 @@
+// src/constants/location.ts
 import { Location } from "@/types/location";
+import { fetchLocations } from "@/repository/api/location";
 
-export const VANCOUVER_LOCATIONS: Location[] = [
+
+export const FALLBACK_LOCATIONS: Location[] = [
   {
     id: 1,
     latitude: 49.2827,
@@ -61,3 +64,14 @@ export const VANCOUVER_LOCATIONS: Location[] = [
     }
   }
 ];
+
+// APIからロケーション情報を取得する関数
+export const getLocations = async (): Promise<Location[]> => {
+  try {
+    const locations = await fetchLocations();
+    return locations;
+  } catch (error) {
+    console.warn('Failed to fetch locations, using fallback data:', error);
+    return FALLBACK_LOCATIONS;
+  }
+};
