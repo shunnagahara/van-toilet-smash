@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { Location } from "@/types/location";
 import type { MatchState } from "@/types/waitlist";
-import type { MatchingState } from "@/types/matching";
+import type { MatchingEntry, MatchingState } from "@/types/matching";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import ImageCarousel from "./ImageCarousel";
 import { addToWaitlist } from "@/repository/supabase/waitlist";
 import { checkForMatch, subscribeToMatching } from "@/repository/supabase/matching";
-import { VANCOUVER_LOCATIONS } from "@/constants/location";
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface ModalBottomSheetProps {
 }
 
 type SheetState = "A" | "B" | "C";
+type BattleResult = "win" | "lose" | null;
 
 const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location }) => {
   const [sheetState, setSheetState] = useState<SheetState>("A");
@@ -26,15 +28,39 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     error: undefined,
   });
   // 新しいstate
-  const [matchingState, setMatchingState] = useState<MatchingState>({
+  const [matchingState] = useState<MatchingState>({
     isMatched: false,
   });
   const [userId, setUserId] = useState<string>("");
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [battleResult, setBattleResult] = useState<BattleResult>(null);
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  const router = useRouter();
+
+  // マッチング後のカウントダウンと勝敗決定
+  useEffect(() => {
+    if (matchingState.isMatched && countdown === null) {
+      setCountdown(5);
+    }
+
+    if (countdown !== null && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+
+    if (countdown === 0 && battleResult === null) {
+      // ランダムで勝敗を決定
+      const result = Math.random() < 0.5 ? "win" : "lose";
+      setBattleResult(result);
+    }
+  }, [matchingState.isMatched, countdown, battleResult]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-    let channel: any;
+    let channel: RealtimeChannel;
   
     const checkForMatchWrapper = async () => {
       console.log('Checking for match - userId:', userId);
@@ -43,7 +69,10 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   
       if (error) {
         console.error('Matching check error:', error);
-        setMatchState(prev => ({ ...prev, error: error.message }));
+        setMatchState(prev => ({ 
+          ...prev, 
+          error: error instanceof Error ? error.message : '予期せぬエラーが発生しました'
+        }));
         return;
       }
   
@@ -58,17 +87,12 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         ? matching.player2_location_id 
         : matching.player1_location_id;
       
-      const opponentLocation = VANCOUVER_LOCATIONS.find(
-        loc => loc.id === opponentLocationId
-      );
-      console.log('Opponent location:', opponentLocation);
-  
-      setMatchingState({
-        isMatched: true,
-        matchingData: matching,
-        opponentLocation,
-      });
-      setMatchState(prev => ({ ...prev, isWaiting: false }));
+      const playerLocationId = matching.player1_id === userId
+        ? matching.player1_location_id
+        : matching.player2_location_id;
+    
+      // バトルページに遷移
+      router.push(`/sp/battle?playerLocationId=${playerLocationId}&opponentLocationId=${opponentLocationId}`);
     };
   
     if (matchState.isWaiting && userId) {
@@ -174,49 +198,10 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   };
 
-
-  const renderMatchingScreen = () => {
-    console.log('Rendering matching screen');
-    console.log('Current location:', location);
-    console.log('Opponent location:', matchingState.opponentLocation);
-
-    return (
-      <div className="flex flex-col items-center justify-center space-y-6 p-4">
-        <h2 className="text-2xl font-bold text-green-600">
-          {currentLanguage === 'ja' ? 'マッチングしました！' : 'Matched!'}
-        </h2>
-        
-        <div className="w-full max-w-md space-y-6">
-          <div className="border rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-2">
-              {currentLanguage === 'ja' ? 'あなたの場所' : 'Your Location'}
-            </h3>
-            <p className="text-gray-700">{location?.[currentLanguage].name}</p>
-          </div>
-
-          <div className="flex justify-center">
-            <span className="material-icons text-3xl text-gray-500">sync_alt</span>
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-2">
-              {currentLanguage === 'ja' ? '対戦相手の場所' : 'Opponent Location'}
-            </h3>
-            <p className="text-gray-700">{matchingState.opponentLocation?.[currentLanguage].name}</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const renderContent = () => {
     console.log('Rendering content');
     console.log('matchingState:', matchingState);
     console.log('matchState:', matchState);
-
-    if (matchingState.isMatched) {
-      return renderMatchingScreen();
-    }
 
     if (matchState.isWaiting) {
       return (
