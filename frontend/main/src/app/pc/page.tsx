@@ -1,14 +1,10 @@
 "use client";
 
 import React from "react";
+import PcLanding from "./PcLanding";
 
-const PcTop: React.FC = () => {
-  return (
-    <div>
-      <h1>PC向けのページ</h1>
-      <p>このページはPCでのアクセス用です。</p>
-    </div>
-  );
+const PcPage: React.FC = () => {
+  return <PcLanding />;
 };
 
-export default PcTop;
+export default PcPage;
