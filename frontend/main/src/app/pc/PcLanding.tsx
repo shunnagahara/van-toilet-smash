@@ -39,7 +39,7 @@ const QRCodeDisplay = ({ url, label }: { url: string; label: string }) => (
 );
 
 const PcLanding = () => {
-  const [currentLanguage, setCurrentLanguage] = useState('ja');
+  const [currentLanguage, setCurrentLanguage] = useState('en'); // Changed from 'ja' to 'en'
   
   const toggleLanguage = () => {
     setCurrentLanguage(prev => prev === 'ja' ? 'en' : 'ja');
