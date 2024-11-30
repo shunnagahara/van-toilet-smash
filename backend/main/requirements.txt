@@ -4,4 +4,6 @@ sqlalchemy
 psycopg2-binary
 geoalchemy2
 pydantic
+pydantic-settings
 alembic
+python-dotenv
