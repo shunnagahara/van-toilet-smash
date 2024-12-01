@@ -2,6 +2,8 @@
 import { Location } from "@/types/location";
 import { fetchLocations } from '@/repository/supabase/location';
 export { fetchLocations };
+export { FALLBACK_LOCATIONS as VANCOUVER_LOCATIONS } from './location';
+
 
 export const FALLBACK_LOCATIONS: Location[] = [
   {

@@ -1,12 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',  // Static HTML出力を有効化
-  basePath: '/van-toilet-smash', // GitHubリポジトリ名を指定
+  // 開発時は static export を無効化
+  output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
+  // 環境に応じてbasePathを設定
+  basePath: process.env.NODE_ENV === 'production' ? '/van-toilet-smash' : '',
   images: {
-    unoptimized: true, // GitHub Pages用に画像最適化を無効化
+    unoptimized: true,
   },
-  assetPrefix: '/van-toilet-smash/', // アセットのプレフィックスを設定
+  // assetPrefixも環境に応じて設定
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/van-toilet-smash/' : '',
 };
 
 export default nextConfig;

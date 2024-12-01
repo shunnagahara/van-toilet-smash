@@ -1,51 +1,23 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
+
+// 静的生成の設定を追加
+export const dynamic = 'force-static';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Toilet Smash',
     short_name: 'ToiletSmash',
     description: 'Battle with toilets in Vancouver',
-    start_url: '/sp',
+    start_url: './sp',
     display: 'standalone',
     background_color: '#ffffff',
     theme_color: '#3B82F6',
     icons: [
       {
-        src: '/icons/icon-72x72.png',
-        sizes: '72x72',
-        type: 'image/png',
-      },
-      {
-        src: '/icons/icon-96x96.png',
-        sizes: '96x96',
-        type: 'image/png',
-      },
-      {
-        src: '/icons/icon-128x128.png',
-        sizes: '128x128',
-        type: 'image/png',
-      },
-      {
-        src: '/icons/icon-144x144.png',
-        sizes: '144x144',
-        type: 'image/png',
-      },
-      {
-        src: '/icons/icon-152x152.png',
-        sizes: '152x152',
-        type: 'image/png',
-      },
-      {
-        src: '/icons/icon-192x192.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icons/icon-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-      },
+        src: 'icons/icon.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
+      }
     ],
-  }
+  };
 }

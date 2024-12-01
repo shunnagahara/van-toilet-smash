@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalBottomSheet from "./components/ModalBottomSheet";
 import Footer from "./components/Footer";
 import MapComponent from "./components/MapComponent";
@@ -15,6 +15,19 @@ const SpTop: React.FC = () => {
     isWaiting: false,
     error: undefined,
   });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered:', registration);
+        })
+        .catch((error) => {
+          console.error('SW registration failed:', error);
+        });
+    }
+  }, []);
 
   const handleMarkerClick = (location: Location) => {
     setSelectedLocation(location);

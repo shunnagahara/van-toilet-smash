@@ -1,12 +1,28 @@
 // src/repository/supabase/location.ts
 import { supabase } from './index';
-import type { Location } from '@/types/location';
+import type { Location, LocationImage } from '@/types/location';
+
+interface LocalizedInfo {
+  language: string;
+  name: string;
+  description: string;
+}
+
+interface RawLocation {
+  id: number;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  is_open: boolean;
+  images: LocationImage[];
+  localized_info: LocalizedInfo[];
+}
 
 export const fetchLocations = async (): Promise<Location[]> => {
   try {
     const { data: locations, error } = await supabase
       .from('locations')
-      .select(`
+      .select<string, RawLocation>(`
         id,
         latitude,
         longitude,
@@ -65,7 +81,7 @@ export const fetchLocationById = async (id: number): Promise<Location | null> =>
   try {
     const { data: location, error } = await supabase
       .from('locations')
-      .select(`
+      .select<string, RawLocation>(`
         id,
         latitude,
         longitude,

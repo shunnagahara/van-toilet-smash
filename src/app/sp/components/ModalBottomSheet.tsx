@@ -27,9 +27,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     isWaiting: false,
     error: undefined,
   });
-  const [matchingState] = useState<MatchingState>({
-    isMatched: false,
-  });
   const [userId, setUserId] = useState<string>("");
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
