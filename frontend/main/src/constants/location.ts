@@ -1,7 +1,7 @@
 // src/constants/location.ts
 import { Location } from "@/types/location";
-import { fetchLocations } from "@/repository/api/location";
-
+import { fetchLocations } from '@/repository/supabase/location';
+export { fetchLocations };
 
 export const FALLBACK_LOCATIONS: Location[] = [
   {
