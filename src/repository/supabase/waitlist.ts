@@ -1,3 +1,4 @@
+// src/repository/supabase/waitlist.ts
 import { supabase } from './index';
 import { MatchingEntry } from '@/types/matching';
 import { WaitlistEntry } from '@/types/waitlist';
@@ -8,9 +9,7 @@ export interface WaitlistResponse {
   userId: string;
 }
 
-// waitlist.ts
 export const addToWaitlist = async (locationId: number): Promise<WaitlistResponse> => {
-  // temporaryUserIdをここで生成
   const temporaryUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
   console.log('Generated userId:', temporaryUserId);
 
@@ -27,16 +26,20 @@ export const addToWaitlist = async (locationId: number): Promise<WaitlistRespons
       .single();
 
     if (error) {
-      console.error('Error adding to waitlist:', error);
-      return { data: null, error, userId: temporaryUserId };
+      return { 
+        data: null, 
+        error: new Error(error.message), 
+        userId: temporaryUserId 
+      };
     }
 
-    console.log('Successfully added to waitlist:', data);
-    // temporaryUserIdを必ず返す
-    return { data, error: null, userId: temporaryUserId };
-  } catch (error) {
-    console.error('Unexpected error in addToWaitlist:', error);
-    // エラーの場合でもtemporaryUserIdを返す
+    return { 
+      data: data as WaitlistEntry, 
+      error: null, 
+      userId: temporaryUserId 
+    };
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error('Unknown error occurred');
     return { data: null, error, userId: temporaryUserId };
   }
 };
@@ -45,31 +48,34 @@ export const checkForMatch = async (userId: string) => {
   console.log('Starting checkForMatch for userId:', userId);
 
   try {
-    // 自分の待機情報を取得
     const { data: myEntry, error: myError } = await supabase
       .from('toilet_smash_waitlist')
       .select('user_id, location_id')
       .eq('user_id', userId)
       .maybeSingle();
 
-    if (myError || !myEntry) {
-      console.log('No entry found for current user or error:', myError);
-      return { data: null, error: myError };
+    if (myError) {
+      return { data: null, error: new Error(myError.message) };
     }
 
-    // 他のプレイヤーを検索
+    if (!myEntry) {
+      return { data: null, error: null };
+    }
+
     const { data: otherEntry, error: otherError } = await supabase
       .from('toilet_smash_waitlist')
       .select('user_id, location_id')
       .neq('user_id', userId)
       .maybeSingle();
 
-    if (otherError || !otherEntry) {
-      console.log('No other players found or error:', otherError);
-      return { data: null, error: otherError };
+    if (otherError) {
+      return { data: null, error: new Error(otherError.message) };
     }
 
-    // マッチングを作成
+    if (!otherEntry) {
+      return { data: null, error: null };
+    }
+
     const { data: matching, error: matchError } = await supabase
       .from('toilet_smash_matching')
       .insert([
@@ -84,19 +90,17 @@ export const checkForMatch = async (userId: string) => {
       .single();
 
     if (matchError) {
-      console.error('Error creating match:', matchError);
-      return { data: null, error: matchError };
+      return { data: null, error: new Error(matchError.message) };
     }
 
-    // 待機リストから削除
     await supabase
       .from('toilet_smash_waitlist')
       .delete()
       .in('user_id', [myEntry.user_id, otherEntry.user_id]);
 
-    return { data: matching, error: null };
-  } catch (error) {
-    console.error('Unexpected error:', error);
+    return { data: matching as MatchingEntry, error: null };
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error('Unknown error occurred');
     return { data: null, error };
   }
 };
