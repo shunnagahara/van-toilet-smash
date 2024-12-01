@@ -8,6 +8,8 @@ interface LocalizedInfo {
   description: string;
 }
 
+type LocalizedInfoRecord = Record<'ja' | 'en', LocalizedInfo>;
+
 interface RawLocation {
   id: number;
   latitude: number;
@@ -116,16 +118,19 @@ export const fetchLocationById = async (id: number): Promise<Location | null> =>
       .single();
 
     if (error) {
-      console.error('Error fetching location:', error);
-      throw error;
+      throw new Error(error.message);
     }
 
     if (!location) {
       return null;
     }
 
-    const jaInfo = location.localized_info?.find((info: any) => info.language === 'ja');
-    const enInfo = location.localized_info?.find((info: any) => info.language === 'en');
+    const localizedInfo = location.localized_info.reduce<LocalizedInfoRecord>((acc, info) => {
+      if (info.language === 'ja' || info.language === 'en') {
+        acc[info.language] = info;
+      }
+      return acc;
+    }, { ja: { language: 'ja', name: '', description: '' }, en: { language: 'en', name: '', description: '' } });
 
     return {
       id: location.id,
@@ -135,16 +140,16 @@ export const fetchLocationById = async (id: number): Promise<Location | null> =>
       isOpen: location.is_open,
       images: location.images || [],
       ja: {
-        name: jaInfo?.name || '',
-        description: jaInfo?.description || ''
+        name: localizedInfo.ja.name,
+        description: localizedInfo.ja.description
       },
       en: {
-        name: enInfo?.name || '',
-        description: enInfo?.description || ''
+        name: localizedInfo.en.name,
+        description: localizedInfo.en.description
       }
     };
-  } catch (error) {
-    console.error('Unexpected error in fetchLocationById:', error);
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error('Unknown error occurred');
     throw error;
   }
 };

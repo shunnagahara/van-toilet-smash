@@ -148,10 +148,10 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     if (!location) return;
   
     try {
-      const { error, userId: newUserId } = await addToWaitlist(location.id);
+      const { error: waitlistError, userId: newUserId } = await addToWaitlist(location.id);
   
-      if (error) {
-        const newState = { isWaiting: false, error: error.message };
+      if (waitlistError) {
+        const newState = { isWaiting: false, error: waitlistError.message };
         setMatchState(newState);
         onMatchStateChange?.(newState);
         return;
@@ -161,12 +161,14 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       const newState = { isWaiting: true };
       setMatchState(newState);
       onMatchStateChange?.(newState);
-    } catch (error) {
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Unknown error occurred');
       const newState = { 
         isWaiting: false, 
         error: currentLanguage === 'ja' ? 
           'エラーが発生しました' : 
-          'An error occurred'
+          'An error occurred',
+        detail: error
       };
       setMatchState(newState);
       onMatchStateChange?.(newState);
