@@ -18,11 +18,25 @@ interface RawLocation {
   localized_info: LocalizedInfo[];
 }
 
+interface RawLocationData {
+  id: number;
+  latitude: number;
+  longitude: number;
+  rating: number | null;
+  is_open: boolean;
+  images: LocationImage[];
+  localized_info: {
+    language: string;
+    name: string;
+    description: string;
+  }[];
+}
+
 export const fetchLocations = async (): Promise<Location[]> => {
   try {
     const { data: locations, error } = await supabase
       .from('locations')
-      .select<string, RawLocation>(`
+      .select<string, RawLocationData>(`
         id,
         latitude,
         longitude,
@@ -49,17 +63,16 @@ export const fetchLocations = async (): Promise<Location[]> => {
       return [];
     }
 
-    return locations.map((location: any) => {
-      // 言語ごとのローカライズ情報を抽出
-      const jaInfo = location.localized_info?.find((info: any) => info.language === 'ja');
-      const enInfo = location.localized_info?.find((info: any) => info.language === 'en');
+    return locations.map((location: RawLocationData) => {
+      const jaInfo = location.localized_info?.find(info => info.language === 'ja');
+      const enInfo = location.localized_info?.find(info => info.language === 'en');
 
       return {
         id: location.id,
         latitude: location.latitude,
         longitude: location.longitude,
-        rating: location.rating,
-        is_open: location.is_open,
+        rating: location.rating ?? undefined,
+        isOpen: location.is_open,
         images: location.images || [],
         ja: {
           name: jaInfo?.name || '',
@@ -76,6 +89,7 @@ export const fetchLocations = async (): Promise<Location[]> => {
     throw error;
   }
 };
+
 
 export const fetchLocationById = async (id: number): Promise<Location | null> => {
   try {

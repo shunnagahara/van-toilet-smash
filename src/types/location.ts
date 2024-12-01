@@ -13,7 +13,8 @@ export interface Location {
   id: number;
   latitude: number;
   longitude: number;
-  is_open: boolean;    // isOpenからis_openに変更
+  rating?: number;  // rating を追加
+  isOpen: boolean;
   images?: LocationImage[];
   ja: LocalizedContent;
   en: LocalizedContent;

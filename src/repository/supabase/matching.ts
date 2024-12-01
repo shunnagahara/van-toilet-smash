@@ -2,7 +2,13 @@ import { supabase } from './index';
 import { MatchingEntry } from '@/types/matching';
 import { WaitlistEntry } from '@/types/waitlist';
 
-export const addToWaitlist = async (locationId: number): Promise<{ data: WaitlistEntry | null; error: any; userId: string }> => {
+export interface WaitlistResponse {
+  data: WaitlistEntry | null;
+  error: Error | null;
+  userId: string;
+}
+
+export const addToWaitlist = async (locationId: number): Promise<WaitlistResponse> => {
   const temporaryUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
   console.log('Adding to waitlist:', { temporaryUserId, locationId });
 

@@ -266,7 +266,9 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                   
                   <div className="flex items-center space-x-2">
                     <span className="material-icons text-gray-500">star</span>
-                    <p className="text-gray-600">{location.rating?.toFixed(1)} / 5.0</p>
+                    <p className="text-gray-600">
+                      {location.rating ? `${location.rating.toFixed(1)} / 5.0` : 'No rating'}
+                    </p>
                   </div>
                   
                   <div className="flex items-center space-x-2">

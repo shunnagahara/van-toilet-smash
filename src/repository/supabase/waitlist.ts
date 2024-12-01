@@ -2,8 +2,14 @@ import { supabase } from './index';
 import { MatchingEntry } from '@/types/matching';
 import { WaitlistEntry } from '@/types/waitlist';
 
+export interface WaitlistResponse {
+  data: WaitlistEntry | null;
+  error: Error | null;
+  userId: string;
+}
+
 // waitlist.ts
-export const addToWaitlist = async (locationId: number): Promise<{ data: WaitlistEntry | null; error: any; userId: string }> => {
+export const addToWaitlist = async (locationId: number): Promise<WaitlistResponse> => {
   // temporaryUserIdをここで生成
   const temporaryUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
   console.log('Generated userId:', temporaryUserId);
