@@ -12,7 +12,7 @@ interface RawLocation {
   id: number;
   latitude: number;
   longitude: number;
-  rating: number;
+  rating: number | null;
   is_open: boolean;
   images: LocationImage[];
   localized_info: LocalizedInfo[];
@@ -131,8 +131,8 @@ export const fetchLocationById = async (id: number): Promise<Location | null> =>
       id: location.id,
       latitude: location.latitude,
       longitude: location.longitude,
-      rating: location.rating,
-      is_open: location.is_open,
+      rating: location.rating ?? undefined,
+      isOpen: location.is_open,
       images: location.images || [],
       ja: {
         name: jaInfo?.name || '',

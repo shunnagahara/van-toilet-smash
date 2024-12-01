@@ -2,6 +2,7 @@ export interface LocationImage {
   id: string;
   url: string;
   created_at: string;  // created_atに変更
+  createdAt?: string; // 後方互換性のために追加
 }
 
 interface LocalizedContent {

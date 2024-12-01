@@ -16,12 +16,12 @@ export const FALLBACK_LOCATIONS: Location[] = [
       {
         id: "1",
         url: "https://tgoysscvgojhzejawwpj.supabase.co/storage/v1/object/public/toilet-images/images.jpeg",
-        createdAt: new Date().toISOString()
+        created_at: new Date().toISOString()
       },
       {
         id: "2",
         url: "https://tgoysscvgojhzejawwpj.supabase.co/storage/v1/object/public/toilet-images/8f3e39adc40efd3b6234a7b3ce7c21977447f8e2.jpg",
-        createdAt: new Date().toISOString()
+        created_at: new Date().toISOString()
       },
     ],
     ja: {

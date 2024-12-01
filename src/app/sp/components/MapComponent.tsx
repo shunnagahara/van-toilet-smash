@@ -6,7 +6,6 @@ import type { RootState } from '../../../store/store';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Location } from '@/types/location';
 import { getLocations } from '@/constants/location';
-import { fetchLocations } from '@/repository/supabase/location';
 
 interface MapComponentProps {
   initialViewState?: {

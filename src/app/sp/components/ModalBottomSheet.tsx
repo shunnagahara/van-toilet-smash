@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { Location } from "@/types/location";
 import type { MatchState } from "@/types/waitlist";
-import type { MatchingEntry, MatchingState } from "@/types/matching";
+import type { MatchingEntry } from "@/types/matching";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import ImageCarousel from "./ImageCarousel";
@@ -148,7 +148,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     if (!location) return;
   
     try {
-      const { data, error, userId: newUserId } = await addToWaitlist(location.id);
+      const { error, userId: newUserId } = await addToWaitlist(location.id);
   
       if (error) {
         const newState = { isWaiting: false, error: error.message };
