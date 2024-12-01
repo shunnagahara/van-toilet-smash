@@ -1,33 +1,37 @@
 // public/sw.js
-self.addEventListener('install', (event) => {
+self.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open('toilet-smash-v1').then((cache) => {
+    caches.open('toilet-smash-v1').then(function(cache) {
       return cache.addAll([
-        '/',
-        '/sp',
-        '/sp/battle',
-        '/manifest.json',
-        '/icons/icon.svg',
+        '/van-toilet-smash/',
+        '/van-toilet-smash/sp',
+        '/van-toilet-smash/sp/battle',
+        '/van-toilet-smash/manifest.json',
+        '/van-toilet-smash/icons/icon.svg'
       ]);
     })
   );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request).then((response) => {
+    caches.match(event.request).then(function(response) {
       return response || fetch(event.request);
     })
   );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', function(event) {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then(function(cacheNames) {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== 'toilet-smash-v1')
-          .map((name) => caches.delete(name))
+          .filter(function(cacheName) {
+            return cacheName !== 'toilet-smash-v1';
+          })
+          .map(function(cacheName) {
+            return caches.delete(cacheName);
+          })
       );
     })
   );
