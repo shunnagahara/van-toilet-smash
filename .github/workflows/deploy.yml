@@ -11,7 +11,7 @@ permissions:
   pages: write
   id-token: write
 
-# 同時実行を制御
+# 同時実行を制御...
 concurrency:
   group: "pages"
   cancel-in-progress: true
