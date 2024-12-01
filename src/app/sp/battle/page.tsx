@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
@@ -9,23 +9,21 @@ import { VANCOUVER_LOCATIONS } from '@/constants/location';
 
 type BattleResult = "win" | "lose" | null;
 
-const BattlePage: React.FC = () => {
+// BattleContentコンポーネントを作成して、useSearchParamsを使用する部分を分離
+const BattleContent: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   
-  // State
   const [countdown, setCountdown] = useState<number>(5);
   const [battleResult, setBattleResult] = useState<BattleResult>(null);
   const [playerLocation, setPlayerLocation] = useState<Location | null>(null);
   const [opponentLocation, setOpponentLocation] = useState<Location | null>(null);
 
   useEffect(() => {
-    // URLパラメータから情報を取得
     const playerLocationId = parseInt(searchParams.get('playerLocationId') || '0');
     const opponentLocationId = parseInt(searchParams.get('opponentLocationId') || '0');
 
-    // ロケーション情報を設定
     setPlayerLocation(VANCOUVER_LOCATIONS.find(loc => loc.id === playerLocationId) || null);
     setOpponentLocation(VANCOUVER_LOCATIONS.find(loc => loc.id === opponentLocationId) || null);
   }, [searchParams]);
@@ -128,6 +126,15 @@ const BattlePage: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// メインのBattlePageコンポーネント
+const BattlePage: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BattleContent />
+    </Suspense>
   );
 };
 
