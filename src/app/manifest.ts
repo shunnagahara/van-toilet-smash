@@ -4,7 +4,7 @@ export const dynamic = 'force-static';
 
 export default function manifest(): MetadataRoute.Manifest {
   const basePath = process.env.NODE_ENV === 'production' ? '/van-toilet-smash' : '';
-  
+  console.log('process.env.NODE_ENV', process.env.NODE_ENV)
   return {
     name: "Toilet Smash",
     short_name: "ToiletSmash",
