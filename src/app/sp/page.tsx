@@ -2,11 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import ModalBottomSheet from "./components/ModalBottomSheet";
-import Footer from "./components/Footer";
 import MapComponent from "./components/MapComponent";
 import LanguageToggle from "./components/LanguageToggle";
 import type { Location } from "@/types/location";
 import type { MatchState } from "@/types/waitlist";
+
+declare global {
+  interface Window {
+    workbox: {
+      register: () => Promise<void>;
+      active: boolean;
+    };
+  }
+}
 
 const SpTop: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,15 +25,22 @@ const SpTop: React.FC = () => {
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered:', registration);
-        })
-        .catch((error) => {
-          console.error('SW registration failed:', error);
-        });
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      window.workbox !== undefined
+    ) {
+      // Service Workerの登録
+      if (process.env.NODE_ENV === 'production') {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then(registration => {
+            console.log('Service Worker registered:', registration);
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      }
     }
   }, []);
 

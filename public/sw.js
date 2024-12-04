@@ -1,35 +1,53 @@
-// public/sw.js
-self.addEventListener('install', function(event) {
+const CACHE_NAME = 'toilet-smash-v1';
+
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open('toilet-smash-v1').then(function(cache) {
+    caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll([
-        '/van-toilet-smash/',
-        '/van-toilet-smash/sp',
-        '/van-toilet-smash/sp/battle',
-        '/van-toilet-smash/manifest.json',
-        '/van-toilet-smash/icons/icon.svg'
+        '/',
+        '/sp',
+        '/sp/battle',
+        '/manifest.json',
+        '/icons/icon-192x192.png',
+        '/icons/icon-512x512.png'
       ]);
     })
   );
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request);
+    caches.match(event.request).then((response) => {
+      // キャッシュがあればそれを返す
+      if (response) {
+        return response;
+      }
+      // キャッシュがなければネットワークリクエストを行う
+      return fetch(event.request).then((response) => {
+        // レスポンスが有効でない場合は、そのまま返す
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+        // レスポンスをキャッシュに追加
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+        return response;
+      });
     })
   );
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(function(cacheNames) {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter(function(cacheName) {
-            return cacheName !== 'toilet-smash-v1';
+          .filter((cacheName) => {
+            return cacheName !== CACHE_NAME;
           })
-          .map(function(cacheName) {
+          .map((cacheName) => {
             return caches.delete(cacheName);
           })
       );
