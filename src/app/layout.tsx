@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Toilet Smash',
   description: 'Battle with toilets in Vancouver',
-  manifest: '/manifest.json',
-}
+  manifest: process.env.NODE_ENV === 'production' ? '/van-toilet-smash/manifest.webmanifest' : '/manifest.webmanifest',
+};
 
 export const viewport: Viewport = {
   width: 'device-width',
