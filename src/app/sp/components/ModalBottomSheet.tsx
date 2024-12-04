@@ -248,7 +248,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
           </button>
         )}
 
-        <div className="p-4 h-full overflow-auto">
+        <div className="p-4 h-full overflow-hidden">
           <div className="flex justify-center">
             <div className="w-12 h-1 bg-gray-300 rounded-full mb-4"></div>
           </div>
