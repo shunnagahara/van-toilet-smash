@@ -62,10 +62,6 @@ const SpTop: React.FC = () => {
           onMatchStateChange={setMatchState}
         />
       </div>
-
-      <div className="z-30 relative">
-        <Footer />
-      </div>
     </div>
   );
 };
