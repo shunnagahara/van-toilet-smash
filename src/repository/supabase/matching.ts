@@ -1,8 +1,9 @@
 import { supabase } from './index';
 import { MatchingEntry, MatchingResponse } from '@/types/matching';
+import { handleTryCatch} from '@/utils/errorHandling';
 
 export const checkForMatch = async (userId: string): Promise<MatchingResponse> => {
-  try {
+  return handleTryCatch(async () => {
     const { data: existingMatch, error: matchError } = await supabase
       .from('toilet_smash_matching')
       .select('*')
@@ -10,18 +11,11 @@ export const checkForMatch = async (userId: string): Promise<MatchingResponse> =
       .maybeSingle();
 
     if (matchError) {
-      return { data: null, error: new Error(matchError.message) };
+      throw new Error(matchError.message);
     }
 
-    if (existingMatch) {
-      return { data: existingMatch as MatchingEntry, error: null };
-    }
-
-    return { data: null, error: null };
-  } catch (err) {
-    const error = err instanceof Error ? err : new Error('Unknown error occurred');
-    return { data: null, error };
-  }
+    return existingMatch as MatchingEntry;
+  });
 };
 
 export const subscribeToMatching = (userId: string, onMatch: (matching: MatchingEntry) => void) => {
@@ -53,19 +47,16 @@ export const subscribeToMatching = (userId: string, onMatch: (matching: Matching
 };
 
 export const cancelMatching = async (userId: string) => {
-  try {
+  return handleTryCatch(async () => {
     const { error } = await supabase
       .from('toilet_smash_waitlist')
       .delete()
       .eq('user_id', userId);
 
     if (error) {
-      return { error: new Error(error.message) };
+      throw new Error(error.message);
     }
 
-    return { error: null };
-  } catch (err) {
-    const error = err instanceof Error ? err : new Error('Unknown error occurred');
-    return { error };
-  }
+    return null;
+  });
 };

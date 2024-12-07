@@ -1,12 +1,12 @@
 // src/repository/supabase/waitlist.ts
 import { supabase } from './index';
 import { WaitlistEntry, WaitlistResponse } from '@/types/waitlist';
+import { handleTryCatch } from '@/utils/errorHandling';
 
 export const addToWaitlist = async (locationId: number): Promise<WaitlistResponse> => {
   const temporaryUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
-  console.log('Generated userId:', temporaryUserId);
-
-  try {
+  
+  const response = await handleTryCatch(async () => {
     const { data, error } = await supabase
       .from('toilet_smash_waitlist')
       .insert([
@@ -19,20 +19,11 @@ export const addToWaitlist = async (locationId: number): Promise<WaitlistRespons
       .single();
 
     if (error) {
-      return { 
-        data: null, 
-        error: new Error(error.message), 
-        userId: temporaryUserId 
-      };
+      throw new Error(error.message);
     }
 
-    return { 
-      data: data as WaitlistEntry, 
-      error: null, 
-      userId: temporaryUserId 
-    };
-  } catch (err) {
-    const error = err instanceof Error ? err : new Error('Unknown error occurred');
-    return { data: null, error, userId: temporaryUserId };
-  }
+    return data as WaitlistEntry;
+  });
+
+  return { ...response, userId: temporaryUserId };
 };

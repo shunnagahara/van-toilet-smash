@@ -1,9 +1,10 @@
 // src/repository/supabase/location.ts
 import { supabase } from './index';
-import type { Location, RawLocationData } from '@/types/location';
+import type { RawLocationData } from '@/types/location';
+import { handleTryCatch } from '@/utils/errorHandling';
 
-export const fetchLocations = async (): Promise<Location[]> => {
-  try {
+export const fetchLocations = async () => {
+  return handleTryCatch(async () => {
     const { data: locations, error } = await supabase
       .from('locations')
       .select<string, RawLocationData>(`
@@ -25,7 +26,6 @@ export const fetchLocations = async (): Promise<Location[]> => {
       `);
 
     if (error) {
-      console.error('Error fetching locations:', error);
       throw error;
     }
 
@@ -54,8 +54,5 @@ export const fetchLocations = async (): Promise<Location[]> => {
         }
       };
     });
-  } catch (error) {
-    console.error('Unexpected error in fetchLocations:', error);
-    throw error;
-  }
+  });
 };

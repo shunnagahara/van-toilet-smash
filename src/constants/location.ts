@@ -70,8 +70,9 @@ export const FALLBACK_LOCATIONS: Location[] = [
 // APIからロケーション情報を取得する関数
 export const getLocations = async (): Promise<Location[]> => {
   try {
-    const locations = await fetchLocations();
-    return locations;
+    const { data, error } = await fetchLocations();
+    if (error) throw error;
+    return data as Location[];
   } catch (error) {
     console.warn('Failed to fetch locations, using fallback data:', error);
     return FALLBACK_LOCATIONS;
