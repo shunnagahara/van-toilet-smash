@@ -12,3 +12,8 @@ export interface MatchingState {
   matchingData?: MatchingEntry;
   opponentLocation?: Location;
 }
+
+export interface MatchingResponse {
+  data: MatchingEntry | null;
+  error: Error | null;
+}

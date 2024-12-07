@@ -20,3 +20,17 @@ export interface Location {
   ja: LocalizedContent;
   en: LocalizedContent;
 }
+
+export interface RawLocationData {
+  id: number;
+  latitude: number;
+  longitude: number;
+  rating: number | null;
+  is_open: boolean;
+  images: LocationImage[];
+  localized_info: {
+    language: string;
+    name: string;
+    description: string;
+  }[];
+}

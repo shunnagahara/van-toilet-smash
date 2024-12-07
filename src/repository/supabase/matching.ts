@@ -1,52 +1,5 @@
 import { supabase } from './index';
-import { MatchingEntry } from '@/types/matching';
-import { WaitlistEntry } from '@/types/waitlist';
-
-interface MatchingResponse {
-  data: MatchingEntry | null;
-  error: Error | null;
-}
-
-interface WaitlistResponse {
-  data: WaitlistEntry | null;
-  error: Error | null;
-  userId: string;
-}
-
-export const addToWaitlist = async (locationId: number): Promise<WaitlistResponse> => {
-  const temporaryUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
-  console.log('Adding to waitlist:', { temporaryUserId, locationId });
-
-  try {
-    const { data, error } = await supabase
-      .from('toilet_smash_waitlist')
-      .insert([
-        {
-          location_id: locationId,
-          user_id: temporaryUserId,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      return { 
-        data: null, 
-        error: new Error(error.message), 
-        userId: temporaryUserId 
-      };
-    }
-
-    return { 
-      data: data as WaitlistEntry, 
-      error: null, 
-      userId: temporaryUserId 
-    };
-  } catch (err) {
-    const error = err instanceof Error ? err : new Error('Unknown error occurred');
-    return { data: null, error, userId: temporaryUserId };
-  }
-};
+import { MatchingEntry, MatchingResponse } from '@/types/matching';
 
 export const checkForMatch = async (userId: string): Promise<MatchingResponse> => {
   try {

@@ -9,3 +9,9 @@ export interface MatchState {
   isWaiting: boolean;
   error?: string;
 }
+
+export interface WaitlistResponse {
+  data: WaitlistEntry | null;
+  error: Error | null;
+  userId: string;
+}
