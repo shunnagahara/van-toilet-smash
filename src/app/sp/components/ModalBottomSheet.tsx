@@ -23,7 +23,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const [sheetState, setSheetState] = useState<SheetState>("A");
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const [matchState, setMatchState] = useState<MatchState>({
     isWaiting: false,
     error: undefined,
@@ -32,17 +31,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const mapElement = document.querySelector('.mapboxgl-map');
-    if (mapElement) {
-      if (isDragging) {
-        (mapElement as HTMLElement).style.pointerEvents = 'none';
-      } else {
-        (mapElement as HTMLElement).style.pointerEvents = 'auto';
-      }
-    }
-  }, [isDragging]);
 
   useEffect(() => {
     let channel: RealtimeChannel;
@@ -126,18 +114,15 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
 
   // タッチイベントハンドラー
   const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
     setTouchStart(e.touches[0].clientY);
     setTouchEnd(e.touches[0].clientY);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.touches[0].clientY);
-    e.stopPropagation();
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    setIsDragging(false);
+  const handleTouchEnd = () => {
     const swipeDistance = touchStart - touchEnd;
     const minSwipeDistance = 50;
 
@@ -148,7 +133,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       if (sheetState === "C") setSheetState("B");
       else if (sheetState === "B") setSheetState("A");
     }
-    e.stopPropagation();
   };
 
   const handleClose = () => {
@@ -246,7 +230,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
       >
         <button
           onClick={handleClose}
