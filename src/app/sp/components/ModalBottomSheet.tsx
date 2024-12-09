@@ -114,15 +114,18 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
 
   // タッチイベントハンドラー
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
     setTouchStart(e.touches[0].clientY);
     setTouchEnd(e.touches[0].clientY);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
     setTouchEnd(e.touches[0].clientY);
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
     const swipeDistance = touchStart - touchEnd;
     const minSwipeDistance = 50;
 
@@ -226,10 +229,11 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       <div
         className={`fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-lg transform transition-all duration-300 ${
           isOpen ? "translate-y-0" : "translate-y-full"
-        } ${getHeightClass()}`}
+        } ${getHeightClass()} touch-none`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        style={{ touchAction: 'none' }}
       >
         <button
           onClick={handleClose}
