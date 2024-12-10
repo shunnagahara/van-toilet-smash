@@ -12,6 +12,7 @@ import { checkForMatch, subscribeToMatching, cancelMatching } from "@/repository
 import MatchingNotificationBar from './MatchingNotificationBar';
 import { useSheetGestures } from '@/hooks/useSheetGestures';
 import CloseButton from './CloseButton';
+import CollapseButton from './CollapseButton';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -171,12 +172,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         <CloseButton onClick={handleClose} currentLanguage={currentLanguage} />
 
         {sheetState === "C" && (
-          <button
-            onClick={handleCollapseToB}
-            className="absolute top-4 left-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 z-10"
-          >
-            <span className="material-icons">arrow_downward</span>
-          </button>
+          <CollapseButton onClick={handleCollapseToB} />
         )}
 
         <div className="p-4 h-full overflow-hidden">
