@@ -9,6 +9,7 @@ import type { RootState } from "../../../store/store";
 import ImageCarousel from "./ImageCarousel";
 import { addToWaitlist } from "@/repository/supabase/waitlist";
 import { checkForMatch, subscribeToMatching, cancelMatching } from "@/repository/supabase/matching";
+import MatchingNotificationBar from './MatchingNotificationBar';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -187,44 +188,14 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   };
 
-  const MatchingNotification = () => {
-    const message = currentLanguage === 'ja' 
-      ? '対戦相手を探しています... しばらくお待ちください...' 
-      : 'Looking for an opponent... Please wait for seconds';
-
-    return (
-      <div className="flex items-center overflow-hidden flex-1 mx-4">
-        <div className="whitespace-nowrap animate-marquee">
-          {message}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
-     {/* 待機中の通知バー */}
-     {matchState.isWaiting && (
-        <div 
-            className={`fixed w-full bg-blue-500 text-white h-12 z-50 transition-transform duration-700 ease-in-out ${
-              isNotificationVisible ? 'translate-y-0' : '-translate-y-full'
-            }`}
-          >
-          <div className="h-full flex items-center relative">
-            {/* キャンセルボタン - 固定位置 */}
-            <button
-              onClick={handleCancelMatching}
-              className="h-12 w-12 flex items-center justify-center hover:bg-blue-600 transition-colors flex-shrink-0"
-              aria-label={currentLanguage === 'ja' ? 'マッチングをキャンセル' : 'Cancel matching'}
-            >
-              <span className="material-icons">close</span>
-            </button>
-
-            {/* 横スクロールするテキスト */}
-            <MatchingNotification />
-          </div>
-        </div>
-      )}
+      {/* 待機中の通知バー */}
+      <MatchingNotificationBar 
+        isVisible={matchState.isWaiting && isNotificationVisible}
+        onCancel={handleCancelMatching}
+        currentLanguage={currentLanguage}
+      />
 
       <div
         className={`fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-lg transform transition-all duration-300 ${
