@@ -26,7 +26,7 @@ interface ModalBottomSheetProps {
 }
 
 const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location, onMatchStateChange }) => {
-  const { sheetState, setSheetState, handlers, getHeightClass } = useSheetGestures('A');
+  const { sheetState, setSheetState, handlers } = useSheetGestures('A');
   const [matchState, setMatchState] = useState<MatchState>({
     isWaiting: false,
     error: undefined,
@@ -123,6 +123,16 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const handleCollapseToB = () => {
     setSheetState('B');
   };
+
+  const getHeightClass = () => {
+    switch (sheetState) {
+      case "A": return "h-1/5";
+      case "B": return "h-1/2";
+      case "C": return "h-full";
+      default: return "h-1/5";
+    }
+  };
+
 
   const handleBattleRequest = async () => {
     if (!location) return;

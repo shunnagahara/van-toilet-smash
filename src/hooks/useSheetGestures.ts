@@ -10,7 +10,7 @@ interface SheetGesturesReturn {
     handleTouchMove: (e: React.TouchEvent) => void;
     handleTouchEnd: (e: React.TouchEvent) => void;
   };
-  getHeightClass: () => string;
+  // getHeightClass: () => string;
 }
 
 export const useSheetGestures = (initialState: SheetState): SheetGesturesReturn => {
@@ -18,14 +18,14 @@ export const useSheetGestures = (initialState: SheetState): SheetGesturesReturn 
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  const getHeightClass = useCallback(() => {
-    switch (sheetState) {
-      case "A": return "h-1/5";
-      case "B": return "h-1/2";
-      case "C": return "h-full";
-      default: return "h-1/5";
-    }
-  }, [sheetState]);
+  // const getHeightClass = useCallback(() => {
+  //   switch (sheetState) {
+  //     case "A": return "h-1/5";
+  //     case "B": return "h-1/2";
+  //     case "C": return "h-full";
+  //     default: return "h-1/5";
+  //   }
+  // }, [sheetState]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     e.stopPropagation();
@@ -62,6 +62,6 @@ export const useSheetGestures = (initialState: SheetState): SheetGesturesReturn 
       handleTouchMove,
       handleTouchEnd,
     },
-    getHeightClass
+    // getHeightClass
   };
 }; 
