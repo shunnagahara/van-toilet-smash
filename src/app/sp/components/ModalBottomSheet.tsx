@@ -11,6 +11,7 @@ import { addToWaitlist } from "@/repository/supabase/waitlist";
 import { checkForMatch, subscribeToMatching, cancelMatching } from "@/repository/supabase/matching";
 import MatchingNotificationBar from './MatchingNotificationBar';
 import { useSheetGestures } from '@/hooks/useSheetGestures';
+import CloseButton from './CloseButton';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -167,13 +168,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         onTouchEnd={handlers.handleTouchEnd}
         style={{ touchAction: 'none' }}
       >
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
-          aria-label={currentLanguage === 'ja' ? '閉じる' : 'Close'}
-        >
-          <span className="material-icons text-gray-600 text-lg">close</span>
-        </button>
+        <CloseButton onClick={handleClose} currentLanguage={currentLanguage} />
 
         {sheetState === "C" && (
           <button
