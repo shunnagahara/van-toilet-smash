@@ -25,8 +25,13 @@ interface ModalBottomSheetProps {
   onMatchStateChange?: (state: MatchState) => void;
 }
 
+type SheetState = "A" | "B" | "C";
+
 const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location, onMatchStateChange }) => {
-  const { sheetState, setSheetState, handlers } = useSheetGestures('A');
+  const [sheetState, setSheetState] = useState<SheetState>("A");
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
   const [matchState, setMatchState] = useState<MatchState>({
     isWaiting: false,
     error: undefined,
@@ -115,6 +120,33 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   };
 
+
+  // タッチイベントハンドラー
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    setTouchStart(e.touches[0].clientY);
+    setTouchEnd(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    setTouchEnd(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    const swipeDistance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+
+    if (swipeDistance > minSwipeDistance) {
+      if (sheetState === "A") setSheetState("B");
+      else if (sheetState === "B") setSheetState("C");
+    } else if (swipeDistance < -minSwipeDistance) {
+      if (sheetState === "C") setSheetState("B");
+      else if (sheetState === "B") setSheetState("A");
+    }
+  };
+
   const handleClose = () => {
     setSheetState('A');
     toggleSheet();
@@ -178,9 +210,9 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         className={`fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-lg transform transition-all duration-300 ${
           isOpen ? "translate-y-0" : "translate-y-full"
         } ${getHeightClass()} touch-none`}
-        onTouchStart={handlers.handleTouchStart}
-        onTouchMove={handlers.handleTouchMove}
-        onTouchEnd={handlers.handleTouchEnd}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{ touchAction: 'none' }}
       >
         <CloseButton onClick={handleClose} currentLanguage={currentLanguage} />
