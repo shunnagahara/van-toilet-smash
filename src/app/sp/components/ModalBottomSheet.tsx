@@ -14,6 +14,9 @@ import { useSheetGestures } from '@/hooks/useSheetGestures';
 import CloseButton from './CloseButton';
 import CollapseButton from './CollapseButton';
 import BattleButton from './BattleButton';
+import LocationCoordinates from './LocationCoordinates';
+import RatingDisplay from './RatingDisplay';
+import OpenStatusDisplay from './OpenStatusDisplay';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -187,30 +190,17 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                 <h2 className="text-xl font-semibold mb-4">{location[currentLanguage].name}</h2>
                 
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="material-icons text-gray-500">location_on</span>
-                    <p className="text-gray-600">
-                      {`${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`}
-                    </p>
-                  </div>
+                  <LocationCoordinates 
+                    latitude={location.latitude}
+                    longitude={location.longitude}
+                  />
                   
-                  <div className="flex items-center space-x-2">
-                    <span className="material-icons text-gray-500">star</span>
-                    <p className="text-gray-600">
-                      {location.rating ? `${location.rating.toFixed(1)} / 5.0` : 'No rating'}
-                    </p>
-                  </div>
+                  <RatingDisplay rating={location.rating ?? 0} />
                   
-                  <div className="flex items-center space-x-2">
-                    <span className="material-icons text-gray-500">
-                      {location.isOpen ? 'check_circle' : 'cancel'}
-                    </span>
-                    <p className="text-gray-600">
-                      {location.isOpen ? 
-                        (currentLanguage === 'ja' ? '営業中' : 'Open') : 
-                        (currentLanguage === 'ja' ? '営業時間外' : 'Closed')}
-                    </p>
-                  </div>
+                  <OpenStatusDisplay 
+                    isOpen={location.isOpen}
+                    currentLanguage={currentLanguage}
+                  />
                 </div>
               </div>
 
