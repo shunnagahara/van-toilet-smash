@@ -2,6 +2,7 @@
 import { supabase } from './index';
 import { WaitlistEntry, WaitlistResponse } from '@/types/waitlist';
 import { handleTryCatch } from '@/utils/errorHandling';
+import { findAndCreateMatch } from './matching';
 
 export const addToWaitlist = async (locationId: number): Promise<WaitlistResponse> => {
   const temporaryUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
@@ -21,6 +22,9 @@ export const addToWaitlist = async (locationId: number): Promise<WaitlistRespons
     if (error) {
       throw new Error(error.message);
     }
+
+    // マッチング処理を実行
+    await findAndCreateMatch(temporaryUserId, locationId);
 
     return data as WaitlistEntry;
   });
