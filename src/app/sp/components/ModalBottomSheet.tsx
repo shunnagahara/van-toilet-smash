@@ -13,6 +13,7 @@ import MatchingNotificationBar from './MatchingNotificationBar';
 import { useSheetGestures } from '@/hooks/useSheetGestures';
 import CloseButton from './CloseButton';
 import CollapseButton from './CollapseButton';
+import BattleButton from './BattleButton';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -217,19 +218,11 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                 <p className="text-gray-700">{location[currentLanguage].description}</p>
               </div>
 
-              <button
+              <BattleButton
                 onClick={handleBattleRequest}
-                disabled={matchState.isWaiting}
-                className={`w-full py-3 rounded-lg transition-colors ${
-                  matchState.isWaiting
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                }`}
-              >
-                {currentLanguage === 'ja' ? 
-                  'このトイレで戦闘する' : 
-                  'Battle at this toilet'}
-              </button>
+                isWaiting={matchState.isWaiting}
+                currentLanguage={currentLanguage}
+              />
 
               {matchState.error && (
                 <p className="text-red-500 text-center">{matchState.error}</p>
