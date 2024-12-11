@@ -7,15 +7,15 @@ interface MatchingNotificationBarProps {
 }
 
 const MatchingNotificationBar: React.FC<MatchingNotificationBarProps> = ({ isVisible, onCancel, currentLanguage }) => {
-  if (!isVisible) return null;
-
   const message = currentLanguage === 'ja' 
     ? '対戦相手を探しています... しばらくお待ちください...' 
     : 'Looking for an opponent... Please wait for seconds';
 
   return (
     <div 
-      className={`fixed w-full bg-blue-500 text-white h-12 z-50 transition-transform duration-700 ease-in-out translate-y-0 top-[env(safe-area-inset-top)]`}
+      className={`fixed w-full bg-blue-500 text-white h-12 z-50 transition-transform duration-700 ease-in-out ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      } top-[env(safe-area-inset-top)]`}
     >
       <div className="h-full flex items-center relative">
         <button
