@@ -19,6 +19,8 @@ export interface Location {
   images?: LocationImage[];
   ja: LocalizedContent;
   en: LocalizedContent;
+  attackPower: number;
+  defensePower: number;
 }
 
 export interface RawLocationData {
@@ -33,4 +35,6 @@ export interface RawLocationData {
     name: string;
     description: string;
   }[];
+  attack_power: number;
+  defense_power: number;
 }

@@ -13,6 +13,8 @@ export const fetchLocations = async () => {
         longitude,
         rating,
         is_open,
+        attack_power,
+        defense_power,
         images (
           id,
           url,
@@ -44,6 +46,8 @@ export const fetchLocations = async () => {
         rating: location.rating ?? undefined,
         isOpen: location.is_open,
         images: location.images || [],
+        attackPower: location.attack_power,
+        defensePower: location.defense_power,
         ja: {
           name: jaInfo?.name || '',
           description: jaInfo?.description || ''
