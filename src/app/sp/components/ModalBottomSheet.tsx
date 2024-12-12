@@ -17,6 +17,7 @@ import BattleButton from './BattleButton';
 import LocationCoordinates from './LocationCoordinates';
 import RatingDisplay from './RatingDisplay';
 import OpenStatusDisplay from './OpenStatusDisplay';
+import PowerRating from './PowerRating';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -230,8 +231,18 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold mb-4">{location[currentLanguage].name}</h2>
-                
                 <div className="space-y-3">
+                  <PowerRating
+                    value={location.attackPower}
+                    icon="local_fire_department"
+                    label={currentLanguage === 'ja' ? '攻撃力' : 'Attack'}
+                  />
+
+                  <PowerRating
+                    value={location.defensePower}
+                    icon="shield"
+                    label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
+                  />
                   <LocationCoordinates 
                     latitude={location.latitude}
                     longitude={location.longitude}
