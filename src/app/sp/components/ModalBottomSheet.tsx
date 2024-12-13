@@ -28,7 +28,7 @@ interface ModalBottomSheetProps {
   onMatchStateChange?: (state: MatchState) => void;
 }
 
-type SheetState = "A" | "B" | "C";
+type SheetState = "A" | "B";
 
 const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet, location, onMatchStateChange }) => {
   const [sheetState, setSheetState] = useState<SheetState>("A");
@@ -145,10 +145,8 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
 
     if (swipeDistance > minSwipeDistance) {
       if (sheetState === "A") setSheetState("B");
-      else if (sheetState === "B") setSheetState("C");
     } else if (swipeDistance < -minSwipeDistance) {
-      if (sheetState === "C") setSheetState("B");
-      else if (sheetState === "B") setSheetState("A");
+      if (sheetState === "B") setSheetState("A");
     }
   };
 
@@ -157,16 +155,11 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     toggleSheet();
   };
 
-  const handleCollapseToB = () => {
-    setSheetState('B');
-  };
-
   const getHeightClass = () => {
     switch (sheetState) {
-      case "A": return "h-1/5";
-      case "B": return "h-1/3";
-      case "C": return "h-full";
-      default: return "h-1/5";
+      case "A": return "h-1/3";
+      case "B": return "h-full";
+      default: return "h-1/3";
     }
   };
 
