@@ -19,6 +19,8 @@ import RatingDisplay from './RatingDisplay';
 import OpenStatusDisplay from './OpenStatusDisplay';
 import PowerRating from './PowerRating';
 import ToiletLevels from './ToiletLevels';
+import Image from 'next/image';
+
 interface ModalBottomSheetProps {
   isOpen: boolean;
   toggleSheet: () => void;
@@ -232,17 +234,27 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
               <div>
                 <h2 className="text-xl font-semibold mb-4">{location[currentLanguage].name}</h2>
                 <div className="space-y-3">
-                  <PowerRating
-                    value={location.attackPower}
-                    icon="local_fire_department"
-                    label={currentLanguage === 'ja' ? '攻撃力' : 'Attack'}
-                  />
-
-                  <PowerRating
-                    value={location.defensePower}
-                    icon="shield"
-                    label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
-                  />
+                  <div className="flex space-x-4">
+                    <div className="flex-1 space-y-3">
+                      <PowerRating
+                        value={location.attackPower}
+                        icon="local_fire_department"
+                        label={currentLanguage === 'ja' ? '攻撃力' : 'Attack'}
+                      />
+                      <PowerRating
+                        value={location.defensePower}
+                        icon="shield"
+                        label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
+                      />
+                    </div>
+                    <Image
+                      src="/toilet-fighters/1.jpg"
+                      alt={currentLanguage === 'ja' ? 'トイレファイター1' : 'Toilet Fighter 1'}
+                      width={100}
+                      height={100}
+                      className="rounded-full object-cover"
+                    />
+                  </div>
 
                   <ToiletLevels
                     cleanlinessLevel={location.cleanlinessLevel}
