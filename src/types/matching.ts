@@ -7,12 +7,6 @@ export interface MatchingEntry {
   created_at: string;
 }
 
-export interface MatchingState {
-  isMatched: boolean;
-  matchingData?: MatchingEntry;
-  opponentLocation?: Location;
-}
-
 export interface MatchingResponse {
   data: MatchingEntry | null;
   error: Error | null;
