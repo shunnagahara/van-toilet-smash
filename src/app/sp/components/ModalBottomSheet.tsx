@@ -243,13 +243,18 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                         label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
                       />
                     </div>
-                    <Image
-                      src="/toilet-fighters/1.jpg"
-                      alt={currentLanguage === 'ja' ? 'トイレファイター1' : 'Toilet Fighter 1'}
-                      width={100}
-                      height={100}
-                      className="rounded-full object-cover"
-                    />
+                    <div className="flex flex-col items-center">
+                      <Image
+                        src="/toilet-fighters/1.jpg"
+                        alt={currentLanguage === 'ja' ? 'トイレファイター1' : 'Toilet Fighter 1'}
+                        width={100}
+                        height={100}
+                        className="rounded-full object-cover"
+                      />
+                      <div className="text-xs text-gray-600 mt-2">
+                        {currentLanguage === 'ja' ? 'トイレ戦士イメージ' : 'Toilet Fighter Image'}
+                      </div>
+                    </div>
                   </div>
 
                   <ToiletLevels
