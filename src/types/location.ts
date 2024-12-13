@@ -21,6 +21,11 @@ export interface Location {
   en: LocalizedContent;
   attackPower: number;
   defensePower: number;
+  cleanlinessLevel: number;
+  locationLevel: number;
+  crowdingLevel: number;
+  toiletCountLevel: number;
+  uniquenessLevel: number;
 }
 
 export interface RawLocationData {
@@ -37,4 +42,9 @@ export interface RawLocationData {
   }[];
   attack_power: number;
   defense_power: number;
+  cleanliness_level: number;
+  location_level: number;
+  crowding_level: number;
+  toilet_count_level: number;
+  uniqueness_level: number;
 }

@@ -15,6 +15,11 @@ export const fetchLocations = async () => {
         is_open,
         attack_power,
         defense_power,
+        cleanliness_level,
+        location_level,
+        crowding_level,
+        toilet_count_level,
+        uniqueness_level,
         images (
           id,
           url,
@@ -48,6 +53,11 @@ export const fetchLocations = async () => {
         images: location.images || [],
         attackPower: location.attack_power,
         defensePower: location.defense_power,
+        cleanlinessLevel: location.cleanliness_level,
+        locationLevel: location.location_level,
+        crowdingLevel: location.crowding_level,
+        toiletCountLevel: location.toilet_count_level,
+        uniquenessLevel: location.uniqueness_level,
         ja: {
           name: jaInfo?.name || '',
           description: jaInfo?.description || ''
