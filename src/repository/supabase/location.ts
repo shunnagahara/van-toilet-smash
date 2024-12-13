@@ -20,6 +20,7 @@ export const fetchLocations = async () => {
         crowding_level,
         toilet_count_level,
         uniqueness_level,
+        fighter_pic,
         images (
           id,
           url,
@@ -51,6 +52,7 @@ export const fetchLocations = async () => {
         rating: location.rating ?? undefined,
         isOpen: location.is_open,
         images: location.images || [],
+        fighterPic: location.fighter_pic,
         attackPower: location.attack_power,
         defensePower: location.defense_power,
         cleanlinessLevel: location.cleanliness_level,

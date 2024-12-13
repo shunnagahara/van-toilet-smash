@@ -19,6 +19,7 @@ export const FALLBACK_LOCATIONS: Location[] = [
     crowdingLevel: 60,
     toiletCountLevel: 70,
     uniquenessLevel: 80,
+    fighterPic: "https://tgoysscvgojhzejawwpj.supabase.co/storage/v1/object/public/toilet-fighter-images/toilet-fighter1.jpg?t=2024-12-13T18%3A03%3A40.322Z",
     images: [
       {
         id: "1",
@@ -53,6 +54,7 @@ export const FALLBACK_LOCATIONS: Location[] = [
     crowdingLevel: 60,
     toiletCountLevel: 70,
     uniquenessLevel: 80,
+    fighterPic: "https://tgoysscvgojhzejawwpj.supabase.co/storage/v1/object/public/toilet-fighter-images/toilet-fighter2.jpg?t=2024-12-13T18%3A03%3A30.697Z",
     images: [],
     ja: {
       name: "イエールタウン・コミュニティセンター",
@@ -76,6 +78,7 @@ export const FALLBACK_LOCATIONS: Location[] = [
     crowdingLevel: 60,
     toiletCountLevel: 70,
     uniquenessLevel: 80,
+    fighterPic: "https://tgoysscvgojhzejawwpj.supabase.co/storage/v1/object/public/toilet-fighter-images/toilet-fighter3.jpg?t=2024-12-13T18%3A02%3A43.746Z",
     images: [],
     ja: {
       name: "コールハーバー休憩所",

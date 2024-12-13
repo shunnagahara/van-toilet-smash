@@ -16,6 +16,7 @@ export interface Location {
   rating: number;
   isOpen: boolean;
   images?: LocationImage[];
+  fighterPic: string;
   ja: LocalizedContent;
   en: LocalizedContent;
   attackPower: number;
@@ -34,6 +35,7 @@ export interface RawLocationData {
   rating: number | null;
   is_open: boolean;
   images: LocationImage[];
+  fighter_pic: string;
   localized_info: {
     language: string;
     name: string;
