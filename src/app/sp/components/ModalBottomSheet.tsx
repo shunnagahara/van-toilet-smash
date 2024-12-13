@@ -15,8 +15,6 @@ import CloseButton from './CloseButton';
 import CollapseButton from './CollapseButton';
 import BattleButton from './BattleButton';
 import LocationCoordinates from './LocationCoordinates';
-import RatingDisplay from './RatingDisplay';
-import OpenStatusDisplay from './OpenStatusDisplay';
 import PowerRating from './PowerRating';
 import ToiletLevels from './ToiletLevels';
 import Image from 'next/image';
@@ -283,16 +281,10 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                     {isDetailsOpen && (
                       <div className="space-y-3">
                         <LocationAddress address={location[currentLanguage].address} />
-                        
-                        <RatingDisplay rating={location.rating ?? 0} />
-                        
-                        <OpenStatusDisplay 
-                          isOpen={location.isOpen}
-                          currentLanguage={currentLanguage}
-                        />
+
 
                         <div className="py-2">
-                          <p className="text-gray-700">{location[currentLanguage].description}</p>
+                          <p className="text-gray-700 text-sm">{location[currentLanguage].description}</p>
                         </div>
                       </div>
                     )}
