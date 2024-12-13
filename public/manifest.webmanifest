@@ -1,6 +1,6 @@
 {
-  "name": "Toilet Smash",
-  "short_name": "ToiletSmash",
+  "name": "VanToiletSmash",
+  "short_name": "VanToiletSmash",
   "description": "Battle with toilets in Vancouver",
   "scope": "/van-toilet-smash/",
   "start_url": "/van-toilet-smash/",
