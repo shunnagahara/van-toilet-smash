@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: 'Toilet Smash',
   description: 'Battle with toilets in Vancouver',
   manifest: process.env.NODE_ENV === 'production' ? '/van-toilet-smash/manifest.webmanifest' : '/manifest.webmanifest',
+  icons: {
+    icon: '/icons/icon.svg',
+  }
 };
 
 export const viewport: Viewport = {
