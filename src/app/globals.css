@@ -39,3 +39,19 @@ body {
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.rainbow-border {
+  border: 2px solid transparent;
+  background-image: linear-gradient(white, white), 
+    linear-gradient(to right, 
+      #ff4d4d, /* 赤 */
+      #ff884d, /* オレンジ */
+      #ffff4d, /* 黄色 */
+      #4dff4d, /* 緑 */
+      #4d4dff, /* 青 */
+      #884dff, /* 紫 */
+      #ff4d4d  /* 赤（循環用） */
+    );
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+}

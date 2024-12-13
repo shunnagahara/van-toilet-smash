@@ -252,7 +252,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                         height={70}
                         className={`rounded-full object-cover ${
                           location.images?.length 
-                            ? 'cursor-pointer hover:opacity-80 transition-opacity' 
+                            ? 'cursor-pointer hover:opacity-80 transition-opacity rainbow-border' 
                             : 'cursor-default'
                         }`}
                         onClick={() => location.images?.length && setIsImageModalOpen(true)}
