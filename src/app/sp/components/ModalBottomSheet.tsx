@@ -22,6 +22,7 @@ import ToiletLevels from './ToiletLevels';
 import Image from 'next/image';
 import { getAssetPath } from "@/utils/path";
 import LocationAddress from './LocationAddress';
+import ImageModal from './ImageModal';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const router = useRouter();
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   useEffect(() => {
     let channel: RealtimeChannel;
@@ -248,7 +250,12 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                         alt={currentLanguage === 'ja' ? 'トイレファイター' : 'Toilet Fighter'}
                         width={70}
                         height={70}
-                        className="rounded-full object-cover"
+                        className={`rounded-full object-cover ${
+                          location.images?.length 
+                            ? 'cursor-pointer hover:opacity-80 transition-opacity' 
+                            : 'cursor-default'
+                        }`}
+                        onClick={() => location.images?.length && setIsImageModalOpen(true)}
                       />
                     </div>
                   </div>
@@ -302,15 +309,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
               {matchState.error && (
                 <p className="text-red-500 text-center">{matchState.error}</p>
               )}
-
-              {location.images && location.images.length > 0 && (
-                <div className="pt-1">
-                  <h3 className="text-base font-medium mb-3">
-                    {currentLanguage === 'ja' ? '施設写真' : 'Facility Photos'}
-                  </h3>
-                  <ImageCarousel images={location.images} />
-                </div>
-              )}
             </div>
           ) : (
             <p className="text-center text-gray-500">
@@ -321,6 +319,14 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
           )}
         </div>
       </div>
+      {location && location.images && (
+          <ImageModal
+            isOpen={isImageModalOpen}
+            onClose={() => setIsImageModalOpen(false)}
+            images={location.images}
+          currentLanguage={currentLanguage}
+        />
+      )}
     </>
   );
 };
