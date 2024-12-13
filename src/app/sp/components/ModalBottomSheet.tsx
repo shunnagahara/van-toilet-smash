@@ -243,7 +243,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                     </div>
                     <div className="flex flex-col items-center mt-4 w-1/3">
                       <Image
-                        src={getAssetPath("toilet-fighters/1.jpg")}
+                        src={getAssetPath("/toilet-fighters/1.jpg")}
                         alt={currentLanguage === 'ja' ? 'トイレファイター1' : 'Toilet Fighter 1'}
                         width={70}
                         height={70}
