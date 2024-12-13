@@ -44,6 +44,8 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const router = useRouter();
 
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
   useEffect(() => {
     let channel: RealtimeChannel;
   
@@ -162,7 +164,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   const getHeightClass = () => {
     switch (sheetState) {
       case "A": return "h-1/5";
-      case "B": return "h-1/2";
+      case "B": return "h-1/3";
       case "C": return "h-full";
       default: return "h-1/5";
     }
@@ -226,7 +228,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
           </div>
           
           {location ? (
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
                 <h2 className="text-xl font-semibold mb-4">{location[currentLanguage].name}</h2>
                 <div className="space-y-3">
@@ -266,22 +268,38 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                     currentLanguage={currentLanguage}
                   />
 
-                  <LocationCoordinates 
-                    latitude={location.latitude}
-                    longitude={location.longitude}
-                  />
-                  
-                  <RatingDisplay rating={location.rating ?? 0} />
-                  
-                  <OpenStatusDisplay 
-                    isOpen={location.isOpen}
-                    currentLanguage={currentLanguage}
-                  />
-                </div>
-              </div>
+                  <div className="relative">
+                    <button 
+                      onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+                      className="w-full flex items-center justify-between py-2 text-gray-600"
+                    >
+                      <span>{currentLanguage === 'ja' ? '詳細情報' : 'Details'}</span>
+                      <span className="material-icons">
+                        {isDetailsOpen ? 'expand_less' : 'expand_more'}
+                      </span>
+                    </button>
+                    
+                    {isDetailsOpen && (
+                      <div className="space-y-3">
+                        <LocationCoordinates 
+                          latitude={location.latitude}
+                          longitude={location.longitude}
+                        />
+                        
+                        <RatingDisplay rating={location.rating ?? 0} />
+                        
+                        <OpenStatusDisplay 
+                          isOpen={location.isOpen}
+                          currentLanguage={currentLanguage}
+                        />
 
-              <div className="py-2">
-                <p className="text-gray-700">{location[currentLanguage].description}</p>
+                        <div className="py-2">
+                          <p className="text-gray-700">{location[currentLanguage].description}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <BattleButton
@@ -295,8 +313,8 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
               )}
 
               {location.images && location.images.length > 0 && (
-                <div className="pt-2">
-                  <h3 className="text-lg font-medium mb-3">
+                <div className="pt-1">
+                  <h3 className="text-base font-medium mb-3">
                     {currentLanguage === 'ja' ? '施設写真' : 'Facility Photos'}
                   </h3>
                   <ImageCarousel images={location.images} />

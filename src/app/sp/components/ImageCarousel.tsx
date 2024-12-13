@@ -21,14 +21,14 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
 
   return (
     <div className="relative">
-      <div ref={sliderRef} className="keen-slider h-48 rounded-lg overflow-hidden">
+      <div ref={sliderRef} className="keen-slider h-40 rounded-lg overflow-hidden">
         {images.map((image, idx) => (
           <div key={image.id} className="keen-slider__slide">
             <Image
               src={image.url}
               alt={`Slide ${idx + 1}`}
-              width={400}
-              height={300}
+              width={320}
+              height={240}
               className="w-full h-full object-cover"
             />
           </div>
