@@ -220,10 +220,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       >
         <CloseButton onClick={handleClose} currentLanguage={currentLanguage} />
 
-        {sheetState === "C" && (
-          <CollapseButton onClick={handleCollapseToB} />
-        )}
-
         <div className="p-4 h-full overflow-hidden">
           <div className="flex justify-center">
             <div className="w-12 h-1 bg-gray-300 rounded-full mb-4"></div>
