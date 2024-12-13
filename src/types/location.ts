@@ -7,6 +7,7 @@ export interface LocationImage {
 interface LocalizedContent {
   name: string;
   description: string;
+  address: string;
 }
 
 export interface Location {
@@ -40,6 +41,7 @@ export interface RawLocationData {
     language: string;
     name: string;
     description: string;
+    address: string;
   }[];
   attack_power: number;
   defense_power: number;

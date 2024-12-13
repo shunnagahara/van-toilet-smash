@@ -21,6 +21,7 @@ import PowerRating from './PowerRating';
 import ToiletLevels from './ToiletLevels';
 import Image from 'next/image';
 import { getAssetPath } from "@/utils/path";
+import LocationAddress from './LocationAddress';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -274,10 +275,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                     
                     {isDetailsOpen && (
                       <div className="space-y-3">
-                        <LocationCoordinates 
-                          latitude={location.latitude}
-                          longitude={location.longitude}
-                        />
+                        <LocationAddress address={location[currentLanguage].address} />
                         
                         <RatingDisplay rating={location.rating ?? 0} />
                         

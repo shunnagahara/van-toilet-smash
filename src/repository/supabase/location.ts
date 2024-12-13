@@ -29,7 +29,8 @@ export const fetchLocations = async () => {
         localized_info (
           language,
           name,
-          description
+          description,
+          address
         )
       `);
 
@@ -62,11 +63,13 @@ export const fetchLocations = async () => {
         uniquenessLevel: location.uniqueness_level,
         ja: {
           name: jaInfo?.name || '',
-          description: jaInfo?.description || ''
+          description: jaInfo?.description || '',
+          address: jaInfo?.address || ''
         },
         en: {
           name: enInfo?.name || '',
-          description: enInfo?.description || ''
+          description: enInfo?.description || '',
+          address: enInfo?.address || ''
         }
       };
     });
