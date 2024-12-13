@@ -20,6 +20,7 @@ import OpenStatusDisplay from './OpenStatusDisplay';
 import PowerRating from './PowerRating';
 import ToiletLevels from './ToiletLevels';
 import Image from 'next/image';
+import { getAssetPath } from "@/utils/path";
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -240,7 +241,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                     </div>
                     <div className="flex flex-col items-center">
                       <Image
-                        src="/toilet-fighters/1.jpg"
+                        src={getAssetPath("toilet-fighters/1.jpg")}
                         alt={currentLanguage === 'ja' ? 'トイレファイター1' : 'Toilet Fighter 1'}
                         width={90}
                         height={90}
