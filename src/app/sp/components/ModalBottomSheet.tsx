@@ -223,9 +223,9 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
           {location ? (
             <div className="space-y-5">
               <div>
-                <h2 className="text-xl font-semibold mb-4">{location[currentLanguage].name}</h2>
+                <h2 className="text-lg font-semibold mb-4">{location[currentLanguage].name}</h2>
                 <div className="space-y-3">
-                  <div className="flex space-x-4">
+                  <div className="flex">
                     <div className="flex-1 space-y-3">
                       <PowerRating
                         value={location.attackPower}
@@ -242,8 +242,8 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                       <Image
                         src="/toilet-fighters/1.jpg"
                         alt={currentLanguage === 'ja' ? 'トイレファイター1' : 'Toilet Fighter 1'}
-                        width={100}
-                        height={100}
+                        width={90}
+                        height={90}
                         className="rounded-full object-cover"
                       />
                       <div className="text-xs text-gray-600 mt-2">
