@@ -1,6 +1,7 @@
 // src/app/sp/components/MapComponent.tsx
 import React, { useEffect, useState } from 'react';
 import Map, { Marker } from 'react-map-gl';
+import Image from 'next/image';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -121,8 +122,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 <div className="relative w-10 h-10 cursor-pointer transform hover:scale-110 transition-transform">
                   <div className={`absolute inset-0 ${markerColor} rounded-full`} />
                   <div className="absolute inset-[2px] bg-white rounded-full" />
-                  <div className="absolute inset-0 flex items-center justify-center text-base">
-                    🚽
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Image 
+                      src={totalScore >= 300 ? "/rare-toilet.png" : "/toilet.png"} 
+                      alt={totalScore >= 300 ? "レアトイレ" : "トイレ"} 
+                      width={24} 
+                      height={24} 
+                    />
                   </div>
                 </div>
               </Marker>
