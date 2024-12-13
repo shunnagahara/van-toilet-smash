@@ -36,17 +36,19 @@ const ImageModal = ({ isOpen, onClose, images, currentLanguage }: ImageModalProp
 
         {/* Image carousel */}
         <div className="bg-white rounded-lg overflow-hidden">
-          <div ref={sliderRef} className="keen-slider h-96">
+          <div ref={sliderRef} className="keen-slider">
             {images.map((image, idx) => (
-              <div key={image.id} className="keen-slider__slide">
-                <div className="h-full flex items-center justify-center bg-gray-100">
-                  <Image
-                    src={image.url}
-                    alt={`Slide ${idx + 1}`}
-                    width={800}
-                    height={600}
-                    className="object-contain h-full w-full"
-                  />
+              <div key={image.id} className="keen-slider__slide flex justify-center">
+                <div className="h-[200px] flex items-center justify-center bg-gray-100">
+                  <div className="relative h-full aspect-video">
+                    <Image
+                      src={image.url}
+                      alt={`Slide ${idx + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 2xl) 100vw, 42rem"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
