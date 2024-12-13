@@ -6,6 +6,7 @@ import MapComponent from "./components/MapComponent";
 import LanguageToggle from "./components/LanguageToggle";
 import type { Location } from "@/types/location";
 import type { MatchState } from "@/types/waitlist";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 
 const SpTop: React.FC = () => {
@@ -49,6 +50,7 @@ const SpTop: React.FC = () => {
           onMatchStateChange={setMatchState}
         />
       </div>
+      <PWAInstallPrompt />
     </div>
   );
 };
