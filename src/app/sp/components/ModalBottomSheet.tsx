@@ -18,7 +18,7 @@ import LocationCoordinates from './LocationCoordinates';
 import RatingDisplay from './RatingDisplay';
 import OpenStatusDisplay from './OpenStatusDisplay';
 import PowerRating from './PowerRating';
-
+import ToiletLevels from './ToiletLevels';
 interface ModalBottomSheetProps {
   isOpen: boolean;
   toggleSheet: () => void;
@@ -243,6 +243,16 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                     icon="shield"
                     label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
                   />
+
+                  <ToiletLevels
+                    cleanlinessLevel={location.cleanlinessLevel}
+                    locationLevel={location.locationLevel}
+                    crowdingLevel={location.crowdingLevel}
+                    toiletCountLevel={location.toiletCountLevel}
+                    uniquenessLevel={location.uniquenessLevel}
+                    currentLanguage={currentLanguage}
+                  />
+
                   <LocationCoordinates 
                     latitude={location.latitude}
                     longitude={location.longitude}
