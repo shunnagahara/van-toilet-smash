@@ -7,6 +7,7 @@ import type { RootState } from '../../../store/store';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Location } from '@/types/location';
 import { getLocations } from '@/constants/location';
+import { getAssetPath } from '@/utils/path';
 
 interface MapComponentProps {
   initialViewState?: {
@@ -124,7 +125,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                   <div className="absolute inset-[2px] bg-white rounded-full" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Image 
-                      src={totalScore >= 300 ? "/rare-toilet.png" : "/toilet.png"} 
+                      src={getAssetPath(totalScore >= 300 ? "/rare-toilet.png" : "/toilet.png")}
                       alt={totalScore >= 300 ? "レアトイレ" : "トイレ"} 
                       width={24} 
                       height={24} 
