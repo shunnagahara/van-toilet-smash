@@ -224,32 +224,31 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
           {location ? (
             <div className="space-y-5">
               <div>
-                <h2 className="text-lg font-semibold mb-4">{location[currentLanguage].name}</h2>
                 <div className="space-y-3">
                   <div className="flex">
-                    <div className="flex-1 space-y-3">
-                      <PowerRating
-                        value={location.attackPower}
-                        icon="local_fire_department"
-                        label={currentLanguage === 'ja' ? '攻撃力' : 'Attack'}
-                      />
-                      <PowerRating
-                        value={location.defensePower}
-                        icon="shield"
-                        label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
-                      />
+                    <div className="flex flex-col w-2/3">
+                      <h2 className="text-lg font-semibold mb-4">{location[currentLanguage].name}</h2>
+                      <div className="flex-1 space-y-3">
+                        <PowerRating
+                          value={location.attackPower}
+                          icon="local_fire_department"
+                          label={currentLanguage === 'ja' ? '攻撃力' : 'Attack'}
+                        />
+                        <PowerRating
+                          value={location.defensePower}
+                          icon="shield"
+                          label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
+                        />
+                      </div>
                     </div>
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center mt-4 w-1/3">
                       <Image
                         src={getAssetPath("toilet-fighters/1.jpg")}
                         alt={currentLanguage === 'ja' ? 'トイレファイター1' : 'Toilet Fighter 1'}
-                        width={90}
-                        height={90}
+                        width={70}
+                        height={70}
                         className="rounded-full object-cover"
                       />
-                      <div className="text-xs text-gray-600 mt-2">
-                        {currentLanguage === 'ja' ? 'トイレ戦士イメージ' : 'Toilet Fighter Image'}
-                      </div>
                     </div>
                   </div>
 
