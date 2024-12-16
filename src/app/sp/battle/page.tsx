@@ -97,7 +97,7 @@ const BattleContent: React.FC = () => {
                 <h3 className="text-xl font-bold text-blue-600">
                   {currentLanguage === 'ja' ? '対戦開始まで...' : 'Battle starts in...'}
                 </h3>
-                <p className="text-4xl font-bold mt-2">{countdown}</p>
+                <p className="text-4xl text-black font-bold mt-2">{countdown}</p>
               </div>
               
               <div className="w-full max-w-md space-y-6">
@@ -105,7 +105,7 @@ const BattleContent: React.FC = () => {
                   <h3 className="text-lg font-medium mb-2">
                     {currentLanguage === 'ja' ? 'あなたの場所' : 'Your Location'}
                   </h3>
-                  <p className="text-gray-700">{playerLocation[currentLanguage].name}</p>
+                  <p className="text-black">{playerLocation[currentLanguage].name}</p>
                 </div>
 
                 <div className="flex justify-center">
@@ -113,10 +113,10 @@ const BattleContent: React.FC = () => {
                 </div>
 
                 <div className="border rounded-lg p-4">
-                  <h3 className="text-lg font-medium mb-2">
+                  <h3 className="text-lg text-black font-medium mb-2">
                     {currentLanguage === 'ja' ? '対戦相手の場所' : 'Opponent Location'}
                   </h3>
-                  <p className="text-gray-700">{opponentLocation[currentLanguage].name}</p>
+                  <p className="text-black">{opponentLocation[currentLanguage].name}</p>
                 </div>
               </div>
             </>

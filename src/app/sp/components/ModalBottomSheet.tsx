@@ -228,7 +228,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                 <div className="space-y-3">
                   <div className="flex">
                     <div className="flex flex-col w-2/3">
-                      <h2 className="text-lg font-semibold mb-4">{location[currentLanguage].name}</h2>
+                      <h2 className="text-lg text-black font-semibold mb-4">{location[currentLanguage].name}</h2>
                       <div className="flex-1 space-y-3">
                         <PowerRating
                           value={location.attackPower}
