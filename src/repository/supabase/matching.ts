@@ -1,6 +1,8 @@
 import { supabase } from './index';
 import { MatchingEntry, MatchingResponse } from '@/types/matching';
 import { handleTryCatch } from '@/utils/errorHandling';
+import { calculateBattleResult } from '@/utils/battle';
+import { VANCOUVER_LOCATIONS } from '@/constants/location';
 
 export const findAndCreateMatch = async (userId: string, locationId: number) => {
   return handleTryCatch(async () => {
@@ -17,6 +19,19 @@ export const findAndCreateMatch = async (userId: string, locationId: number) => 
     }
 
     if (waitingPlayer) {
+      // プレイヤーの位置情報を取得
+      const player1Location = VANCOUVER_LOCATIONS.find(loc => loc.id === locationId);
+      const player2Location = VANCOUVER_LOCATIONS.find(loc => loc.id === waitingPlayer.location_id);
+
+      if (!player1Location || !player2Location) {
+        throw new Error('Location not found');
+      }
+
+      // バトル結果を計算
+      const battleResult = calculateBattleResult({
+        player1Location,
+        player2Location
+      });
       // マッチング成立時、マッチングテーブルに登録
       const { data: matchData, error: matchError } = await supabase
         .from('toilet_smash_matching')
@@ -25,7 +40,9 @@ export const findAndCreateMatch = async (userId: string, locationId: number) => 
             player1_id: userId,
             player2_id: waitingPlayer.user_id,
             player1_location_id: locationId,
-            player2_location_id: waitingPlayer.location_id
+            player2_location_id: waitingPlayer.location_id,
+            player1_result: battleResult.player1Result,
+            player2_result: battleResult.player2Result
           }
         ])
         .select()

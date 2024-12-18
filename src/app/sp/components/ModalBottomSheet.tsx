@@ -76,7 +76,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
         ? matching.player1_location_id
         : matching.player2_location_id;
     
-      router.push(`/sp/battle?playerLocationId=${playerLocationId}&opponentLocationId=${opponentLocationId}`);
+      router.push(`/sp/battle?playerLocationId=${playerLocationId}&opponentLocationId=${opponentLocationId}&userId=${userId}`);
     };
   
     if (matchState.isWaiting && userId) {

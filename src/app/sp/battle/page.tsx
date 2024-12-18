@@ -6,12 +6,14 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import type { Location } from '@/types/location';
 import { VANCOUVER_LOCATIONS } from '@/constants/location';
+import { checkForMatch } from '@/repository/supabase/matching';
 
 type BattleResult = "win" | "lose" | null;
 
 // BattleContentコンポーネントを作成して、useSearchParamsを使用する部分を分離
 const BattleContent: React.FC = () => {
   const searchParams = useSearchParams();
+  const userId = searchParams.get('userId') || '';
   const router = useRouter();
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   
@@ -35,10 +37,18 @@ const BattleContent: React.FC = () => {
     }
 
     if (countdown === 0 && battleResult === null) {
-      const result = Math.random() < 0.5 ? "win" : "lose";
-      setBattleResult(result);
+      const checkMatchResult = async () => {
+        const { data: matching } = await checkForMatch(userId);
+        if (matching) {
+          const result = matching.player1_id === userId ? 
+            matching.player1_result : 
+            matching.player2_result;
+          setBattleResult(result);
+        }
+      };
+      checkMatchResult();
     }
-  }, [countdown, battleResult]);
+  }, [countdown, battleResult, userId]);
 
   const handleReturnToTop = () => {
     router.push('/sp');
