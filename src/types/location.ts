@@ -14,8 +14,6 @@ export interface Location {
   id: number;
   latitude: number;
   longitude: number;
-  rating: number;
-  isOpen: boolean;
   images?: LocationImage[];
   fighterPic: string;
   ja: LocalizedContent;
@@ -33,8 +31,6 @@ export interface RawLocationData {
   id: number;
   latitude: number;
   longitude: number;
-  rating: number | null;
-  is_open: boolean;
   images: LocationImage[];
   fighter_pic: string;
   localized_info: {
