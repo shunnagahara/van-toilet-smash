@@ -38,3 +38,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/migration/node_modules
+/migration/package-lock.json
+/migration/package.json

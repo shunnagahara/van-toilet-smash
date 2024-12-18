@@ -1,0 +1,38 @@
+{
+  "locations": [
+    {
+      "latitude": 49.2827,
+      "longitude": -123.1207,
+      "attack_power": 8.5,
+      "defense_power": 7.0,
+      "cleanliness_level": 90,
+      "location_level": 85,
+      "crowding_level": 70,
+      "toilet_count_level": 65,
+      "uniqueness_level": 85,
+      "fighter_pic": "https://example.com/fighter1.jpg",
+      "localized_info": [
+        {
+          "language": "ja",
+          "name": "スタンレーパーク公衆トイレ",
+          "description": "スタンレーパーク内にある清潔な公衆トイレ。24時間利用可能。",
+          "address": "スタンレーパーク内、バンクーバー、BC"
+        },
+        {
+          "language": "en",
+          "name": "Stanley Park Public Restroom",
+          "description": "Clean public restroom located in Stanley Park. Available 24/7.",
+          "address": "Stanley Park, Vancouver, BC"
+        }
+      ],
+      "images": [
+        {
+          "url": "https://example.com/toilet1.jpg"
+        },
+        {
+          "url": "https://example.com/toilet2.jpg"
+        }
+      ]
+    }
+  ]
+}
