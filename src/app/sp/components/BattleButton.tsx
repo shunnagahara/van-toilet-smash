@@ -19,7 +19,7 @@ const BattleButton: React.FC<BattleButtonProps> = ({ onClick, isWaiting, current
     >
       {currentLanguage === 'ja' ? 
         'このトイレで戦闘する' : 
-        'Battle at this toilet'}
+        'Battle using this toilet'}
     </button>
   );
 };
