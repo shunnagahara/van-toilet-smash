@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toilet-smash-v1';
+const CACHE_NAME = 'toilet-smash-v0.1';
 const basePath = '/van-toilet-smash';
 
 self.addEventListener('install', (event) => {
