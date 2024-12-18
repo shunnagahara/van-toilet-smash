@@ -10,8 +10,8 @@ const MainPage: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const isPC = window.innerWidth > 1024; // 1024px以上ならPCと判定
-    dispatch(setIsPC(isPC)); // ReduxにisPCを設定
+    const isPC = window.innerWidth > 1024;
+    dispatch(setIsPC(isPC));
     router.push(isPC ? "/pc" : "/sp");
   }, [dispatch, router]);
 
