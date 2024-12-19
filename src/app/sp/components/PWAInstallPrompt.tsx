@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { incrementInstallCount } from '@/repository/supabase/pwa';
-import { checkAndTrackInstall } from '@/utils/pwaTracking';
 
 interface IOSInstructionStep {
   text: string;
@@ -18,7 +17,9 @@ const PWAInstallPrompt = () => {
 
   useEffect(() => {
     const initializePWA = async () => {
-      const { isIOSDevice, isStandalone } = await checkAndTrackInstall();
+      const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                          (window.navigator as any).standalone;
       setIsIOS(isIOSDevice);
 
       const hasPromptBeenShown = localStorage.getItem('pwaPromptShown');
@@ -40,18 +41,6 @@ const PWAInstallPrompt = () => {
     };
 
     initializePWA();
-
-    // Androidの場合のみappinstalledイベントを使用
-    if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      window.addEventListener('appinstalled', async () => {
-        try {
-          await incrementInstallCount();
-          localStorage.setItem('pwaInstallTracked', 'true');
-        } catch (error) {
-          console.error('Failed to track PWA install:', error);
-        }
-      });
-    }
   }, []);
 
   const getIOSInstructions = (): IOSInstructionStep[] => {
@@ -71,7 +60,6 @@ const PWAInstallPrompt = () => {
   const handleInstall = async () => {
     if (isIOS) {
       setShowIOSInstructions(true);
-      // iOS用のインストラクション表示時にプロンプト表示済みとしてマーク
       localStorage.setItem('pwaPromptShown', 'true');
     } else if (deferredPrompt) {
       try {
@@ -80,6 +68,7 @@ const PWAInstallPrompt = () => {
         if (outcome === 'accepted') {
           setIsVisible(false);
           localStorage.setItem('pwaPromptShown', 'true');
+          await incrementInstallCount();
         }
       } catch (error) {
         console.error('Installation error:', error);
@@ -88,7 +77,15 @@ const PWAInstallPrompt = () => {
     }
   };
 
-  const handleDismiss = () => {
+  const handleDismiss = async () => {
+    if (isIOS && showIOSInstructions) {
+      try {
+        await incrementInstallCount();
+      } catch (error) {
+        console.error('Failed to track PWA install:', error);
+      }
+    }
+    
     setIsVisible(false);
     setShowIOSInstructions(false);
     localStorage.setItem('pwaPromptShown', 'true');
