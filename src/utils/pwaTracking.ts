@@ -9,14 +9,14 @@ export const checkAndTrackInstall = async () => {
   const hasTrackedInstall = localStorage.getItem('pwaInstallTracked');
 
   // スタンドアローンモードで起動され、まだトラッキングされていない場合
-  if (isStandalone && !hasTrackedInstall) {
+  // if (isStandalone && !hasTrackedInstall) {
     try {
       await incrementInstallCount();
       localStorage.setItem('pwaInstallTracked', 'true');
     } catch (error) {
       console.error('Failed to track PWA install:', error);
     }
-  }
+  // }
 
   return { isIOSDevice, isStandalone };
 };
