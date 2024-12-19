@@ -42,6 +42,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install migration dependencies
+        working-directory: ./migration
+        run: npm ci
+
       - name: Build with Next.js
         run: npm run build
         env:
