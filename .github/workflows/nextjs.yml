@@ -28,6 +28,10 @@ jobs:
           
       - name: Install dependencies
         run: npm ci
+
+      - name: Install migration dependencies
+        working-directory: ./migration
+        run: npm ci
         
       - name: Build
         run: npm run build
