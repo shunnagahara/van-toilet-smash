@@ -39,6 +39,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/migration/node_modules
-/migration/package-lock.json
-/migration/package.json
+/migration
