@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { incrementInstallCount } from '@/repository/supabase/pwa';
+import { checkAndTrackInstall } from '@/utils/pwaTracking';
 
 interface IOSInstructionStep {
   text: string;
@@ -16,36 +17,41 @@ const PWAInstallPrompt = () => {
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
   useEffect(() => {
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    setIsIOS(isIOSDevice);
+    const initializePWA = async () => {
+      const { isIOSDevice, isStandalone } = await checkAndTrackInstall();
+      setIsIOS(isIOSDevice);
 
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    const hasPromptBeenShown = localStorage.getItem('pwaPromptShown');
+      const hasPromptBeenShown = localStorage.getItem('pwaPromptShown');
 
-    if (!isStandalone && !hasPromptBeenShown) {
-      if (isIOSDevice) {
-        setIsVisible(true);
-      } else {
-        const handler = (e: any) => {
-          e.preventDefault();
-          setDeferredPrompt(e);
+      if (!isStandalone && !hasPromptBeenShown) {
+        if (isIOSDevice) {
           setIsVisible(true);
-        };
+        } else {
+          const handler = (e: any) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+            setIsVisible(true);
+          };
 
-        window.addEventListener('beforeinstallprompt', handler);
-        return () => window.removeEventListener('beforeinstallprompt', handler);
+          window.addEventListener('beforeinstallprompt', handler);
+          return () => window.removeEventListener('beforeinstallprompt', handler);
+        }
       }
+    };
+
+    initializePWA();
+
+    // Androidの場合のみappinstalledイベントを使用
+    if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      window.addEventListener('appinstalled', async () => {
+        try {
+          await incrementInstallCount();
+          localStorage.setItem('pwaInstallTracked', 'true');
+        } catch (error) {
+          console.error('Failed to track PWA install:', error);
+        }
+      });
     }
-
-    // インストール完了イベントのリスナーを追加
-    window.addEventListener('appinstalled', async (event) => {
-      try {
-        await incrementInstallCount();
-        console.log('PWA install tracked successfully');
-      } catch (error) {
-        console.error('Failed to track PWA install:', error);
-      }
-    });
   }, []);
 
   const getIOSInstructions = (): IOSInstructionStep[] => {
@@ -64,10 +70,10 @@ const PWAInstallPrompt = () => {
 
   const handleInstall = async () => {
     if (isIOS) {
-      // Show detailed iOS instructions
       setShowIOSInstructions(true);
+      // iOS用のインストラクション表示時にプロンプト表示済みとしてマーク
+      localStorage.setItem('pwaPromptShown', 'true');
     } else if (deferredPrompt) {
-      // Handle Android installation
       try {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
