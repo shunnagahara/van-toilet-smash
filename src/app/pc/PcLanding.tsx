@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
+import { getAssetPath } from '@/utils/path';
 
 const QRCodeDisplay = ({ url, label }: { url: string; label: string }) => (
   <div className="w-full flex justify-center">
@@ -9,7 +10,7 @@ const QRCodeDisplay = ({ url, label }: { url: string; label: string }) => (
         <h2 className="font-semibold text-gray-700 mb-4 text-center">{label}</h2>
         <div className="w-[180px] h-[180px] mx-auto bg-white border-2 border-gray-200 flex items-center justify-center">
           <Image
-            src="/sp-qr.png"
+            src={getAssetPath('/sp-qr.png')}
             alt="QR Code"
             width={160}
             height={160}
