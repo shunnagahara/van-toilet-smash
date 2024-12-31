@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/app/pc/Card';
 import { getAssetPath } from '@/utils/path';
 import { PC } from '@/constants/i18n';
 
