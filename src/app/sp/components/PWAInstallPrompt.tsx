@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
+import type { Language } from '@/constants/i18n';
+import { PWA } from '@/constants/i18n';
 import { incrementInstallCount } from '@/repository/supabase/pwa';
 
 interface IOSInstructionStep {
@@ -13,11 +15,12 @@ const PWAInstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
-  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage) as Language;
+
+  const t = (text: { ja: string; en: string }) => text[currentLanguage];
 
   useEffect(() => {
     const initializePWA = async () => {
-      // デバイスとモード判定のログ
       const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       console.log('Device Detection:', {
         userAgent: navigator.userAgent,
@@ -59,7 +62,6 @@ const PWAInstallPrompt = () => {
       console.error('Error initializing PWA:', error);
     });
 
-    // インストール完了イベントのリスナー（主にAndroid用）
     const handleAppInstalled = async () => {
       console.log('App installed event triggered');
       try {
@@ -73,7 +75,6 @@ const PWAInstallPrompt = () => {
 
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // 表示モードの変更監視
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
     const handleDisplayModeChange = async (e: MediaQueryListEvent) => {
       console.log('Display mode changed:', {
@@ -102,28 +103,21 @@ const PWAInstallPrompt = () => {
   }, []);
 
   const getIOSInstructions = (): IOSInstructionStep[] => {
-    return currentLanguage === 'ja' 
-      ? [
-          { text: 'ブラウザのメニューボタン（共有ボタン）をタップ', icon: 'ios_share' },
-          { text: '下にスクロールして「ホーム画面に追加」をタップ', icon: 'add_to_home_screen' },
-          { text: '右上の「追加」をタップ', icon: 'add' }
-        ]
-      : [
-          { text: 'Tap the browser menu (share) button', icon: 'ios_share' },
-          { text: 'Scroll down and tap "Add to Home Screen"', icon: 'add_to_home_screen' },
-          { text: 'Tap "Add" in the top right', icon: 'add' }
-        ];
+    return [
+      { text: t(PWA.INSTALL_STEPS_SHARE), icon: 'ios_share' },
+      { text: t(PWA.INSTALL_STEPS_ADD), icon: 'add_to_home_screen' },
+      { text: t(PWA.INSTALL_STEPS_CONFIRM), icon: 'add' }
+    ];
   };
 
   const handleInstall = async () => {
     console.log('Install button clicked:', { isIOS, deferredPrompt: !!deferredPrompt });
-    
+
     if (isIOS) {
       setShowIOSInstructions(true);
       localStorage.setItem('pwaPromptShown', 'true');
       console.log('Showing iOS instructions');
-      
-      // iOSの場合、ここでインストールのトラッキングを試みる
+
       try {
         await incrementInstallCount();
         localStorage.setItem('pwaInstallTracked', 'true');
@@ -137,7 +131,7 @@ const PWAInstallPrompt = () => {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         console.log('Install prompt outcome:', outcome);
-        
+
         if (outcome === 'accepted') {
           setIsVisible(false);
           localStorage.setItem('pwaPromptShown', 'true');
@@ -150,7 +144,7 @@ const PWAInstallPrompt = () => {
     }
   };
 
-  const handleDismiss = async () => {
+  const handleDismiss = () => {
     console.log('Dismissing prompt:', { showIOSInstructions, isIOS });
     setIsVisible(false);
     setShowIOSInstructions(false);
@@ -166,9 +160,7 @@ const PWAInstallPrompt = () => {
           {showIOSInstructions ? (
             <>
               <h3 className="font-semibold text-lg mb-4">
-                {currentLanguage === 'ja' 
-                  ? 'インストール手順' 
-                  : 'Installation Steps'}
+                {t(PWA.INSTALL_STEPS_TITLE)}
               </h3>
               <ol className="space-y-4 mb-4">
                 {getIOSInstructions().map((step, index) => (
@@ -182,33 +174,29 @@ const PWAInstallPrompt = () => {
                 onClick={handleDismiss}
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors w-full"
               >
-                {currentLanguage === 'ja' ? '了解' : 'Got it'}
+                {t(PWA.INSTALL_STEPS_GOT_IT)}
               </button>
             </>
           ) : (
             <>
               <h3 className="font-semibold text-lg mb-2">
-                {currentLanguage === 'ja' 
-                  ? 'アプリをインストール' 
-                  : 'Install App'}
+                {t(PWA.INSTALL_TITLE)}
               </h3>
               <p className="text-gray-600 text-sm mb-4">
-                {currentLanguage === 'ja'
-                  ? 'ホーム画面に追加して、より快適にご利用いただけます。'
-                  : 'Add to home screen for a better experience.'}
+                {t(PWA.INSTALL_DESCRIPTION)}
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={handleInstall}
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors"
                 >
-                  {currentLanguage === 'ja' ? 'インストール' : 'Install'}
+                  {t(PWA.INSTALL_BUTTON)}
                 </button>
                 <button
                   onClick={handleDismiss}
                   className="text-gray-500 px-4 py-2 rounded-lg text-sm hover:bg-gray-100 transition-colors"
                 >
-                  {currentLanguage === 'ja' ? '後で' : 'Later'}
+                  {t(PWA.INSTALL_LATER)}
                 </button>
               </div>
             </>
