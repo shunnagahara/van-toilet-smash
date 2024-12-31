@@ -18,7 +18,8 @@ export const COMMON = {
   ERROR_GENERAL: createTranslation('エラーが発生しました', 'An error occurred'),
   ERROR_INVALID_DATA: createTranslation('データの形式が不正です', 'Invalid data format'),
   ERROR_LOAD_FAILED: createTranslation('データの読み込みに失敗しました', 'Failed to load data'),
-  ERROR_CANCEL_FAILED: createTranslation('キャンセルに失敗しました', 'Failed to cancel matching')
+  ERROR_CANCEL_FAILED: createTranslation('キャンセルに失敗しました', 'Failed to cancel matching'),
+  SWITCH_LANGUAGE: createTranslation('言語を切り替え', 'Toggle language')
 } as const;
 
 export const MAP = {

@@ -1,12 +1,16 @@
 import React from 'react';
+import type { Language } from '@/constants/i18n';
+import { TOILET } from '@/constants/i18n';
 
 interface BattleButtonProps {
   onClick: () => void;
   isWaiting: boolean;
-  currentLanguage: string;
+  currentLanguage: Language;
 }
 
 const BattleButton: React.FC<BattleButtonProps> = ({ onClick, isWaiting, currentLanguage }) => {
+  const t = (text: { ja: string; en: string }) => text[currentLanguage];
+
   return (
     <button
       onClick={onClick}
@@ -17,11 +21,9 @@ const BattleButton: React.FC<BattleButtonProps> = ({ onClick, isWaiting, current
           : 'bg-blue-500 hover:bg-blue-600 text-white'
       }`}
     >
-      {currentLanguage === 'ja' ? 
-        'このトイレで戦闘する' : 
-        'Battle using this toilet'}
+      {t(TOILET.BATTLE_BUTTON)}
     </button>
   );
 };
 
-export default BattleButton; 
+export default BattleButton;
