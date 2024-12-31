@@ -1,40 +1,24 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
 
 const QRCodeDisplay = ({ url, label }: { url: string; label: string }) => (
   <div className="w-full flex justify-center">
-    <div className="border rounded-lg p-6 bg-gray-50 w-[300px]">
-      <h2 className="font-semibold text-gray-700 mb-4 text-center">{label}</h2>
-      <div className="w-[180px] h-[180px] mx-auto bg-white border-2 border-gray-200 flex items-center justify-center">
-        <div className="grid grid-cols-5 grid-rows-5 gap-1 p-4">
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
-          <div className="w-4 h-4"></div>
-          <div className="w-4 h-4 bg-black"></div>
+    <Card className="w-[300px] bg-gray-50">
+      <CardContent className="p-6">
+        <h2 className="font-semibold text-gray-700 mb-4 text-center">{label}</h2>
+        <div className="w-[180px] h-[180px] mx-auto bg-white border-2 border-gray-200 flex items-center justify-center">
+          <Image
+            src="/sp-qr.png"
+            alt="QR Code"
+            width={160}
+            height={160}
+            className="object-contain"
+          />
         </div>
-      </div>
-      <p className="text-sm text-gray-500 text-center mt-4">{url}</p>
-    </div>
+        <p className="text-sm text-gray-500 text-center mt-4">{url}</p>
+      </CardContent>
+    </Card>
   </div>
 );
 
