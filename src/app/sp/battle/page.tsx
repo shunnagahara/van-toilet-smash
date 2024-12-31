@@ -7,20 +7,22 @@ import type { RootState } from '@/store/store';
 import type { Location } from '@/types/location';
 import { VANCOUVER_LOCATIONS } from '@/constants/location';
 import { checkForMatch } from '@/repository/supabase/matching';
+import { TOILET, COMMON } from '@/constants/i18n';
+import type { Language } from '@/constants/i18n';
 
 type BattleResult = "win" | "lose" | null;
 
-// BattleContentコンポーネントを作成して、useSearchParamsを使用する部分を分離
 const BattleContent: React.FC = () => {
   const searchParams = useSearchParams();
   const userId = searchParams.get('userId') || '';
   const router = useRouter();
-  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
-  
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage) as Language;
   const [countdown, setCountdown] = useState<number>(5);
   const [battleResult, setBattleResult] = useState<BattleResult>(null);
   const [playerLocation, setPlayerLocation] = useState<Location | null>(null);
   const [opponentLocation, setOpponentLocation] = useState<Location | null>(null);
+
+  const t = (text: { ja: string; en: string }) => text[currentLanguage];
 
   useEffect(() => {
     const playerLocationId = parseInt(searchParams.get('playerLocationId') || '0');
@@ -59,23 +61,19 @@ const BattleContent: React.FC = () => {
       {battleResult === "win" ? (
         <div className="text-center">
           <h2 className="text-3xl font-bold text-green-600 mb-4">
-            {currentLanguage === 'ja' ? '勝利！' : 'Victory!'}
+            {t(TOILET.BATTLE_VICTORY)}
           </h2>
           <p className="text-lg text-gray-700">
-            {currentLanguage === 'ja' 
-              ? 'おめでとうございます！あなたの勝利です！' 
-              : 'Congratulations! You are the winner!'}
+            {t(TOILET.BATTLE_CONGRATULATIONS)}
           </p>
         </div>
       ) : (
         <div className="text-center">
           <h2 className="text-3xl font-bold text-red-600 mb-4">
-            {currentLanguage === 'ja' ? '敗北...' : 'Defeat...'}
+            {t(TOILET.BATTLE_DEFEAT)}
           </h2>
           <p className="text-lg text-gray-700">
-            {currentLanguage === 'ja'
-              ? '残念...次は勝利を掴みましょう！'
-              : 'Too bad... Better luck next time!'}
+            {t(TOILET.BATTLE_TRY_AGAIN)}
           </p>
         </div>
       )}
@@ -84,13 +82,13 @@ const BattleContent: React.FC = () => {
         onClick={handleReturnToTop}
         className="mt-8 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
       >
-        {currentLanguage === 'ja' ? 'TOPに戻る' : 'Return to TOP'}
+        {t(COMMON.RETURN_TO_TOP)}
       </button>
     </div>
   );
 
   if (!playerLocation || !opponentLocation) {
-    return <div>Loading...</div>;
+    return <div>{t(COMMON.LOADING)}</div>;
   }
 
   return (
@@ -100,12 +98,12 @@ const BattleContent: React.FC = () => {
           {battleResult === null ? (
             <>
               <h2 className="text-2xl font-bold text-green-600">
-                {currentLanguage === 'ja' ? 'マッチングしました！' : 'Matched!'}
+                {t(TOILET.BATTLE_MATCHED)}
               </h2>
 
               <div className="text-center mb-8">
                 <h3 className="text-xl font-bold text-blue-600">
-                  {currentLanguage === 'ja' ? '対戦開始まで...' : 'Battle starts in...'}
+                  {t(TOILET.BATTLE_STARTS_IN)}
                 </h3>
                 <p className="text-4xl text-black font-bold mt-2">{countdown}</p>
               </div>
@@ -113,7 +111,7 @@ const BattleContent: React.FC = () => {
               <div className="w-full max-w-md space-y-6">
                 <div className="border rounded-lg p-4">
                   <h3 className="text-lg font-medium mb-2">
-                    {currentLanguage === 'ja' ? 'あなたの場所' : 'Your Location'}
+                    {t(TOILET.BATTLE_YOUR_LOCATION)}
                   </h3>
                   <p className="text-black">{playerLocation[currentLanguage].name}</p>
                 </div>
@@ -124,7 +122,7 @@ const BattleContent: React.FC = () => {
 
                 <div className="border rounded-lg p-4">
                   <h3 className="text-lg text-black font-medium mb-2">
-                    {currentLanguage === 'ja' ? '対戦相手の場所' : 'Opponent Location'}
+                    {t(TOILET.BATTLE_OPPONENT_LOCATION)}
                   </h3>
                   <p className="text-black">{opponentLocation[currentLanguage].name}</p>
                 </div>
@@ -139,7 +137,6 @@ const BattleContent: React.FC = () => {
   );
 };
 
-// メインのBattlePageコンポーネント
 const BattlePage: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
