@@ -152,16 +152,6 @@ const PWAInstallPrompt = () => {
 
   const handleDismiss = async () => {
     console.log('Dismissing prompt:', { showIOSInstructions, isIOS });
-    
-    // if (isIOS && showIOSInstructions) {
-    //   try {
-    //     await incrementInstallCount();
-    //     console.log('iOS install tracking on dismiss successful');
-    //   } catch (error) {
-    //     console.error('Failed to track PWA install on dismiss:', error);
-    //   }
-    // }
-    
     setIsVisible(false);
     setShowIOSInstructions(false);
     localStorage.setItem('pwaPromptShown', 'true');
