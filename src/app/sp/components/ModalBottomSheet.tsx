@@ -10,14 +10,14 @@ import { addToWaitlist } from "@/repository/supabase/waitlist";
 import { checkForMatch, subscribeToMatching, cancelMatching } from "@/repository/supabase/matching";
 import { COMMON, TOILET, MAP } from '@/constants/i18n';
 import type { Language } from '@/constants/i18n';
-import MatchingNotificationBar from './MatchingNotificationBar';
-import CloseButton from './CloseButton';
-import BattleButton from './BattleButton';
-import PowerRating from './PowerRating';
-import ToiletLevels from './ToiletLevels';
-import LocationAddress from './LocationAddress';
-import ImageModal from './ImageModal';
-import ToiletFighterImage from './ToiletFighterImage';
+import MatchingNotificationBar from './modal-bottom-sheet/MatchingNotificationBar';
+import CloseButton from './modal-bottom-sheet/CloseButton';
+import BattleButton from './modal-bottom-sheet/BattleButton';
+import PowerRating from './modal-bottom-sheet/PowerRating';
+import ToiletLevels from './modal-bottom-sheet/ToiletLevels';
+import LocationAddress from './modal-bottom-sheet/LocationAddress';
+import ImageModal from './modal-bottom-sheet/ImageModal';
+import ToiletFighterImage from './modal-bottom-sheet/ToiletFighterImage';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
