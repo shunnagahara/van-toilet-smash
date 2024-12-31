@@ -6,68 +6,59 @@ import { VANCOUVER_LOCATIONS } from '@/constants/location';
 
 export const findAndCreateMatch = async (userId: string, locationId: number) => {
   return handleTryCatch(async () => {
-    const { data: waitingPlayer, error: waitError } = await supabase
-      .from('toilet_smash_waitlist')
-      .select('*')
-      .neq('user_id', userId)
-      .limit(1)
-      .maybeSingle();
-
-    if (waitError) {
-      console.error('Wait list query error:', waitError);
-      throw new Error(waitError.message);
-    }
-
-    if (waitingPlayer) {
-      // プレイヤーの位置情報を取得
-      const player1Location = VANCOUVER_LOCATIONS.find(loc => loc.id === locationId);
-      const player2Location = VANCOUVER_LOCATIONS.find(loc => loc.id === waitingPlayer.location_id);
-
-      if (!player1Location || !player2Location) {
-        throw new Error('Location not found');
-      }
-
-      // バトル結果を計算
-      const battleResult = calculateBattleResult({
-        player1Location,
-        player2Location
+    // Call the atomic matching function
+    const { data: matchResult, error: matchError } = await supabase
+      .rpc('match_players', {
+        p_user_id: userId,
+        p_location_id: locationId
       });
-      // マッチング成立時、マッチングテーブルに登録
-      const { data: matchData, error: matchError } = await supabase
-        .from('toilet_smash_matching')
-        .insert([
-          {
-            player1_id: userId,
-            player2_id: waitingPlayer.user_id,
-            player1_location_id: locationId,
-            player2_location_id: waitingPlayer.location_id,
-            player1_result: battleResult.player1Result,
-            player2_result: battleResult.player2Result
-          }
-        ])
-        .select()
-        .single();
 
-      if (matchError) {
-        console.error('Match creation error:', matchError);
-        throw new Error(matchError.message);
-      }
-
-      // 両プレイヤーを待機リストから削除
-      const { error: deleteError } = await supabase
-        .from('toilet_smash_waitlist')
-        .delete()
-        .in('user_id', [userId, waitingPlayer.user_id]);
-
-      if (deleteError) {
-        console.error('Waitlist deletion error:', deleteError);
-        // エラーをログに記録するが、マッチングは既に成立しているのでスロー不要
-      }
-
-      return matchData;
+    if (matchError) {
+      console.error('Matching error:', matchError);
+      throw new Error(matchError.message);
     }
 
-    return null;
+    // If no match was found, return null
+    if (!matchResult || !matchResult[0].matched_user_id) {
+      return null;
+    }
+
+    const matchedPlayer = matchResult[0];
+
+    // Get player locations
+    const player1Location = VANCOUVER_LOCATIONS.find(loc => loc.id === locationId);
+    const player2Location = VANCOUVER_LOCATIONS.find(loc => loc.id === matchedPlayer.matched_location_id);
+
+    if (!player1Location || !player2Location) {
+      throw new Error('Location not found');
+    }
+
+    // Calculate battle result
+    const battleResult = calculateBattleResult({
+      player1Location,
+      player2Location
+    });
+
+    // Create match entry
+    const { data: matchData, error: createError } = await supabase
+      .from('toilet_smash_matching')
+      .insert([{
+        player1_id: userId,
+        player2_id: matchedPlayer.matched_user_id,
+        player1_location_id: locationId,
+        player2_location_id: matchedPlayer.matched_location_id,
+        player1_result: battleResult.player1Result,
+        player2_result: battleResult.player2Result
+      }])
+      .select()
+      .single();
+
+    if (createError) {
+      console.error('Match creation error:', createError);
+      throw new Error(createError.message);
+    }
+
+    return matchData;
   });
 };
 
