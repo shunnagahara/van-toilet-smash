@@ -1,4 +1,3 @@
-// src/repository/supabase/location.ts
 import { supabase } from './index';
 import type { RawLocationData } from '@/types/location';
 import { handleTryCatch } from '@/utils/errorHandling';

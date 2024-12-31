@@ -6,7 +6,6 @@ import { VANCOUVER_LOCATIONS } from '@/constants/location';
 
 export const findAndCreateMatch = async (userId: string, locationId: number) => {
   return handleTryCatch(async () => {
-    // Call the atomic matching function
     const { data: matchResult, error: matchError } = await supabase
       .rpc('match_players', {
         p_user_id: userId,
@@ -18,14 +17,12 @@ export const findAndCreateMatch = async (userId: string, locationId: number) => 
       throw new Error(matchError.message);
     }
 
-    // If no match was found, return null
     if (!matchResult || !matchResult[0].matched_user_id) {
       return null;
     }
 
     const matchedPlayer = matchResult[0];
 
-    // Get player locations
     const player1Location = VANCOUVER_LOCATIONS.find(loc => loc.id === locationId);
     const player2Location = VANCOUVER_LOCATIONS.find(loc => loc.id === matchedPlayer.matched_location_id);
 
@@ -33,13 +30,11 @@ export const findAndCreateMatch = async (userId: string, locationId: number) => 
       throw new Error('Location not found');
     }
 
-    // Calculate battle result
     const battleResult = calculateBattleResult({
       player1Location,
       player2Location
     });
 
-    // Create match entry
     const { data: matchData, error: createError } = await supabase
       .from('toilet_smash_matching')
       .insert([{

@@ -1,4 +1,3 @@
-// src/repository/supabase/waitlist.ts
 import { supabase } from './index';
 import { WaitlistEntry, WaitlistResponse } from '@/types/waitlist';
 import { handleTryCatch } from '@/utils/errorHandling';
@@ -23,7 +22,6 @@ export const addToWaitlist = async (locationId: number): Promise<WaitlistRespons
       throw new Error(error.message);
     }
 
-    // マッチング処理を実行
     await findAndCreateMatch(temporaryUserId, locationId);
 
     return data as WaitlistEntry;
