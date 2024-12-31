@@ -13,34 +13,76 @@ const PWAInstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
   useEffect(() => {
-    const initializePWA = async () => {
+    const checkInstallState = () => {
+      // iOS デバイスの判定
       const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                          (window.navigator as any).standalone;
       setIsIOS(isIOSDevice);
 
+      // スタンドアローンモードの判定（iOS & Android）
+      const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
+                                (window.navigator as any).standalone;
+      setIsStandalone(isInStandaloneMode);
+
+      // インストール済みかどうかのフラグをチェック
       const hasPromptBeenShown = localStorage.getItem('pwaPromptShown');
+      const hasTrackedInstall = localStorage.getItem('pwaInstallTracked');
 
-      if (!isStandalone && !hasPromptBeenShown) {
-        if (isIOSDevice) {
-          setIsVisible(true);
-        } else {
-          const handler = (e: any) => {
-            e.preventDefault();
-            setDeferredPrompt(e);
-            setIsVisible(true);
-          };
+      // スタンドアローンモードで起動され、まだトラッキングされていない場合
+      if (isInStandaloneMode && !hasTrackedInstall) {
+        incrementInstallCount().catch(console.error);
+        localStorage.setItem('pwaInstallTracked', 'true');
+      }
 
-          window.addEventListener('beforeinstallprompt', handler);
-          return () => window.removeEventListener('beforeinstallprompt', handler);
-        }
+      // プロンプトを表示するかどうかの判定
+      if (!isInStandaloneMode && !hasPromptBeenShown) {
+        setIsVisible(true);
       }
     };
 
-    initializePWA();
+    // 初回チェック
+    checkInstallState();
+
+    // Android用のインストールプロンプトイベントリスナー
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsVisible(true);
+    };
+
+    // インストール完了イベントリスナー（Android用）
+    const handleAppInstalled = async () => {
+      try {
+        await incrementInstallCount();
+        localStorage.setItem('pwaInstallTracked', 'true');
+        localStorage.setItem('pwaPromptShown', 'true');
+        setIsVisible(false);
+      } catch (error) {
+        console.error('Failed to track PWA install:', error);
+      }
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    // 表示モードの変更を監視
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleDisplayModeChange = (e: MediaQueryListEvent) => {
+      if (e.matches && !localStorage.getItem('pwaInstallTracked')) {
+        incrementInstallCount().catch(console.error);
+        localStorage.setItem('pwaInstallTracked', 'true');
+      }
+    };
+    mediaQuery.addEventListener('change', handleDisplayModeChange);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      mediaQuery.removeEventListener('change', handleDisplayModeChange);
+    };
   }, []);
 
   const getIOSInstructions = (): IOSInstructionStep[] => {
@@ -68,7 +110,6 @@ const PWAInstallPrompt = () => {
         if (outcome === 'accepted') {
           setIsVisible(false);
           localStorage.setItem('pwaPromptShown', 'true');
-          await incrementInstallCount();
         }
       } catch (error) {
         console.error('Installation error:', error);
@@ -77,21 +118,13 @@ const PWAInstallPrompt = () => {
     }
   };
 
-  const handleDismiss = async () => {
-    if (isIOS && showIOSInstructions) {
-      try {
-        await incrementInstallCount();
-      } catch (error) {
-        console.error('Failed to track PWA install:', error);
-      }
-    }
-    
+  const handleDismiss = () => {
     setIsVisible(false);
     setShowIOSInstructions(false);
     localStorage.setItem('pwaPromptShown', 'true');
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || isStandalone) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg p-4 z-50 animate-fade-in">
