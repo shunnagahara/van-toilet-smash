@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Map, { Marker } from 'react-map-gl';
 import Image from 'next/image';
 import { useSelector } from 'react-redux';
@@ -31,7 +31,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [error, setError] = useState<string | null>(null);
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage) as Language;
 
-  const t = (text: { ja: string; en: string }) => text[currentLanguage];
+  const t = useCallback((text: { ja: string; en: string }) => text[currentLanguage], [currentLanguage]);
 
   const calculateTotalScore = (location: Location): number => {
     return (
@@ -71,7 +71,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     };
 
     loadLocations();
-  }, [currentLanguage]);
+  }, [currentLanguage, t]);
 
   if (!mapboxAccessToken) {
     return <div className="w-full h-full bg-gray-200 flex items-center justify-center">
