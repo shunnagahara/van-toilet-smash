@@ -13,7 +13,6 @@ import CloseButton from './CloseButton';
 import BattleButton from './BattleButton';
 import PowerRating from './PowerRating';
 import ToiletLevels from './ToiletLevels';
-import Image from 'next/image';
 import LocationAddress from './LocationAddress';
 import ImageModal from './ImageModal';
 import ToiletFighterImage from './ToiletFighterImage';

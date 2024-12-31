@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LocationImage } from '@/types/location';
 import { useKeenSlider } from 'keen-slider/react';
 import Image from 'next/image';
@@ -12,13 +12,22 @@ interface ImageModalProps {
 }
 
 const ImageModal = ({ isOpen, onClose, images, currentLanguage }: ImageModalProps) => {
-  const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean[]>(Array(images.length).fill(true));
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slideChanged(slider) {
       setCurrentSlide(slider.track.details.rel);
     },
   });
+
+  const handleImageLoad = (index: number) => {
+    setIsLoading(prev => {
+      const newState = [...prev];
+      newState[index] = false;
+      return newState;
+    });
+  };
 
   if (!isOpen) return null;
 
@@ -39,14 +48,22 @@ const ImageModal = ({ isOpen, onClose, images, currentLanguage }: ImageModalProp
           <div ref={sliderRef} className="keen-slider">
             {images.map((image, idx) => (
               <div key={image.id} className="keen-slider__slide flex justify-center">
-                <div className="h-[200px] flex items-center justify-center bg-gray-100">
+                <div className="h-[200px] flex items-center justify-center bg-gray-100 relative w-full">
+                  {isLoading[idx] && currentSlide === idx && (
+                    <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                  )}
                   <div className="relative h-full aspect-video">
                     <Image
                       src={image.url}
                       alt={`Slide ${idx + 1}`}
                       fill
-                      className="object-contain"
+                      className={`object-contain transition-opacity duration-300 ${
+                        isLoading[idx] ? 'opacity-0' : 'opacity-100'
+                      }`}
                       sizes="(max-width: 2xl) 100vw, 42rem"
+                      onLoadingComplete={() => handleImageLoad(idx)}
+                      loading={currentSlide === idx ? "eager" : "lazy"}
+                      priority={currentSlide === idx}
                     />
                   </div>
                 </div>
