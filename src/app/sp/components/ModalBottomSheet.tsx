@@ -16,6 +16,7 @@ import ToiletLevels from './ToiletLevels';
 import Image from 'next/image';
 import LocationAddress from './LocationAddress';
 import ImageModal from './ImageModal';
+import ToiletFighterImage from './ToiletFighterImage';
 
 interface ModalBottomSheetProps {
   isOpen: boolean;
@@ -238,7 +239,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                       </div>
                     </div>
                     <div className="flex flex-col items-center mt-4 w-1/3">
-                      <Image
+                        <ToiletFighterImage
                         src={location.fighterPic}
                         alt={currentLanguage === 'ja' ? 'トイレファイター' : 'Toilet Fighter'}
                         width={70}
