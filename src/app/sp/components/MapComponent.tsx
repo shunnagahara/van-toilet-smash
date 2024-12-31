@@ -8,6 +8,7 @@ import { Location } from '@/types/location';
 import { getLocations } from '@/constants/location';
 import { getAssetPath } from '@/utils/path';
 import { MAP, COMMON } from '@/constants/i18n';
+import { MAP as MAP_CONSTANTS } from '@/constants/common';
 import type { Language } from '@/constants/i18n';
 
 interface MapComponentProps {
@@ -21,11 +22,7 @@ interface MapComponentProps {
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ 
-  initialViewState = {
-    longitude: -123.1207,
-    latitude: 49.2827,
-    zoom: 13
-  },
+  initialViewState = MAP_CONSTANTS.INITIAL_VIEW_STATE,
   mapboxAccessToken,
   onMarkerClick 
 }) => {
@@ -95,8 +92,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
   }
 
   const mapStyle = currentLanguage === 'ja' 
-    ? 'mapbox://styles/mapbox/streets-v11?language=ja' 
-    : 'mapbox://styles/mapbox/streets-v11?language=en';
+    ? MAP_CONSTANTS.MAP_STYLE.ja 
+    : MAP_CONSTANTS.MAP_STYLE.en;
 
   return (
     <div className="w-full h-full">
@@ -109,7 +106,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         {Array.isArray(locations) && locations.map(location => {
           const totalScore = calculateTotalScore(location);
           const markerColor = getMarkerColor(totalScore);
-          
+
           return (
             <Marker
               key={location.id}
@@ -123,7 +120,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 <div className="absolute inset-[2px] bg-white rounded-full" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image 
-                    src={getAssetPath(totalScore >= 300 ? "/rare-toilet.png" : "/toilet.png")}
+                    src={getAssetPath(totalScore >= 300 ? MAP_CONSTANTS.TOILET_IMAGE.rare : MAP_CONSTANTS.TOILET_IMAGE.normal)}
                     alt={totalScore >= 300 ? t(MAP.RARE_TOILET) : t(MAP.TOILET)} 
                     width={24} 
                     height={24} 

@@ -22,3 +22,22 @@ export const BATTLE = {
     LOSE: 'lose' as const
   }
 } as const;
+
+
+export const MAP = {
+  INITIAL_VIEW_STATE: {
+    longitude: -123.1207,
+    latitude: 49.2827,
+    zoom: 13
+  },
+
+  MAP_STYLE: {
+    ja: 'mapbox://styles/mapbox/streets-v11?language=ja',
+    en: 'mapbox://styles/mapbox/streets-v11?language=en'
+  },
+
+  TOILET_IMAGE: {
+    rare: '/rare-toilet.png',
+    normal: '/toilet.png'
+  }
+} as const;
