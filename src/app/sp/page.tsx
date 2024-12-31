@@ -8,7 +8,6 @@ import type { Location } from "@/types/location";
 import type { MatchState } from "@/types/waitlist";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
-
 const SpTop: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location>();
