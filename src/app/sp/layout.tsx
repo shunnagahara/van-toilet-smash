@@ -3,7 +3,6 @@
 import React from "react";
 import MobileConsole from "./components/MobileConsole";
 
-// SPページ用のレイアウト
 export default function SPLayout({
   children,
 }: {

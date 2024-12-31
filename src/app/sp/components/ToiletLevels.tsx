@@ -1,4 +1,6 @@
 import React from 'react';
+import { TOILET } from '@/constants/i18n';
+import type { Language } from '@/constants/i18n';
 
 interface ToiletLevelsProps {
   cleanlinessLevel: number;
@@ -6,7 +8,7 @@ interface ToiletLevelsProps {
   crowdingLevel: number;
   toiletCountLevel: number;
   uniquenessLevel: number;
-  currentLanguage: string;
+  currentLanguage: Language;
 }
 
 const ToiletLevels: React.FC<ToiletLevelsProps> = ({
@@ -17,31 +19,33 @@ const ToiletLevels: React.FC<ToiletLevelsProps> = ({
   uniquenessLevel,
   currentLanguage
 }) => {
+  const t = (text: { ja: string; en: string }) => text[currentLanguage];
+
   const levels = [
     {
       value: cleanlinessLevel,
       color: 'blue',
-      label: currentLanguage === 'ja' ? '清潔レベル' : 'Cleanliness Level'
+      label: t(TOILET.STATS_CLEANLINESS)
     },
     {
       value: locationLevel,
       color: 'green',
-      label: currentLanguage === 'ja' ? '立地レベル' : 'Location Level'
+      label: t(TOILET.STATS_LOCATION)
     },
     {
       value: crowdingLevel,
       color: 'red',
-      label: currentLanguage === 'ja' ? '混雑レベル' : 'Crowding Level'
+      label: t(TOILET.STATS_CROWDING)
     },
     {
       value: toiletCountLevel,
       color: 'purple',
-      label: currentLanguage === 'ja' ? '便器数レベル' : 'Toilet Count Level'
+      label: t(TOILET.STATS_TOILET_COUNT)
     },
     {
       value: uniquenessLevel,
       color: 'yellow',
-      label: currentLanguage === 'ja' ? 'ユニークレベル' : 'Uniqueness Level'
+      label: t(TOILET.STATS_UNIQUENESS)
     }
   ] as const;
 
