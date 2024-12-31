@@ -1,3 +1,5 @@
+import { PATHS } from '@/constants/common';
+
 export const getAssetPath = (path: string): string => {
-  return `${process.env.NODE_ENV === 'production' ? '/van-toilet-smash' : ''}${path}`;
-}; 
+  return `${PATHS.BASE_PATH}${path}`;
+};
