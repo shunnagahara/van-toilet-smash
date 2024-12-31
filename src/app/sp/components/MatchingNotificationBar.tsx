@@ -1,15 +1,19 @@
 import React from 'react';
+import { TOILET } from '@/constants/i18n';
+import type { Language } from '@/constants/i18n';
 
 interface MatchingNotificationBarProps {
   isVisible: boolean;
   onCancel: () => void;
-  currentLanguage: string;
+  currentLanguage: Language;
 }
 
-const MatchingNotificationBar: React.FC<MatchingNotificationBarProps> = ({ isVisible, onCancel, currentLanguage }) => {
-  const message = currentLanguage === 'ja' 
-    ? '対戦相手を探しています... しばらくお待ちください...' 
-    : 'Looking for an opponent... Please wait for seconds';
+const MatchingNotificationBar: React.FC<MatchingNotificationBarProps> = ({ 
+  isVisible, 
+  onCancel, 
+  currentLanguage 
+}) => {
+  const t = (text: { ja: string; en: string }) => text[currentLanguage];
 
   return (
     <div 
@@ -21,13 +25,13 @@ const MatchingNotificationBar: React.FC<MatchingNotificationBarProps> = ({ isVis
         <button
           onClick={onCancel}
           className="h-12 w-12 flex items-center justify-center hover:bg-blue-600 transition-colors flex-shrink-0"
-          aria-label={currentLanguage === 'ja' ? 'マッチングをキャンセル' : 'Cancel matching'}
+          aria-label={t(TOILET.BATTLE_CANCEL)}
         >
           <span className="material-icons">close</span>
         </button>
         <div className="flex items-center overflow-hidden flex-1 mx-4">
           <div className="whitespace-nowrap animate-marquee">
-            {message}
+            {t(TOILET.BATTLE_SEARCHING)}
           </div>
         </div>
       </div>
@@ -35,4 +39,4 @@ const MatchingNotificationBar: React.FC<MatchingNotificationBarProps> = ({ isVis
   );
 };
 
-export default MatchingNotificationBar; 
+export default MatchingNotificationBar;

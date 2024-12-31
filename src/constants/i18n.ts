@@ -23,7 +23,9 @@ export const COMMON = {
 
 export const MAP = {
   SELECT_MARKER: createTranslation('マーカーを選択してください', 'Please select a marker'),
-  MAPBOX_TOKEN_REQUIRED: createTranslation('Mapboxのアクセストークンが必要です', 'Mapbox access token is required')
+  MAPBOX_TOKEN_REQUIRED: createTranslation('Mapboxのアクセストークンが必要です', 'Mapbox access token is required'),
+  TOILET: createTranslation('トイレ', 'Toilet'),
+  RARE_TOILET: createTranslation('レアトイレ', 'Rare Toilet')
 } as const;
 
 export const TOILET = {
@@ -37,7 +39,7 @@ export const TOILET = {
   BATTLE_DEFEAT: createTranslation('敗北...', 'Defeat...'),
   BATTLE_CONGRATULATIONS: createTranslation('おめでとうございます！あなたの勝利です！', 'Congratulations! You are the winner!'),
   BATTLE_TRY_AGAIN: createTranslation('残念...次は勝利を掴みましょう！', 'Too bad... Better luck next time!'),
-
+  BATTLE_CANCEL: createTranslation('キャンセル', 'Cancel'),
   STATS_ATTACK: createTranslation('攻撃力', 'Attack'),
   STATS_DEFENSE: createTranslation('防御力', 'Defense'),
   STATS_CLEANLINESS: createTranslation('清潔レベル', 'Cleanliness Level'),

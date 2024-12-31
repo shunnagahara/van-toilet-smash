@@ -1,4 +1,3 @@
-// src/app/sp/components/MapComponent.tsx
 import React, { useEffect, useState } from 'react';
 import Map, { Marker } from 'react-map-gl';
 import Image from 'next/image';
@@ -8,6 +7,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Location } from '@/types/location';
 import { getLocations } from '@/constants/location';
 import { getAssetPath } from '@/utils/path';
+import { MAP, COMMON } from '@/constants/i18n';
+import type { Language } from '@/constants/i18n';
 
 interface MapComponentProps {
   initialViewState?: {
@@ -31,7 +32,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage) as Language;
+
+  const t = (text: { ja: string; en: string }) => text[currentLanguage];
 
   const calculateTotalScore = (location: Location): number => {
     return (
@@ -56,20 +59,15 @@ const MapComponent: React.FC<MapComponentProps> = ({
       try {
         setLoading(true);
         const data = await getLocations();
-        // データが配列であることを確認
         if (Array.isArray(data)) {
           setLocations(data);
         } else {
           console.error('Received non-array data:', data);
-          setError(currentLanguage === 'ja' ? 
-            'データの形式が不正です' : 
-            'Invalid data format');
+          setError(t(COMMON.ERROR_INVALID_DATA));
         }
       } catch (err) {
         console.error('Error loading locations:', err);
-        setError(currentLanguage === 'ja' ? 
-          'データの読み込みに失敗しました' : 
-          'Failed to load locations');
+        setError(t(COMMON.ERROR_LOAD_FAILED));
       } finally {
         setLoading(false);
       }
@@ -80,13 +78,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   if (!mapboxAccessToken) {
     return <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-      <p>{currentLanguage === 'ja' ? 'Mapboxのアクセストークンが必要です' : 'Mapbox access token is required'}</p>
+      <p>{t(MAP.MAPBOX_TOKEN_REQUIRED)}</p>
     </div>;
   }
 
   if (loading) {
     return <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-      <p>{currentLanguage === 'ja' ? '読み込み中...' : 'Loading...'}</p>
+      <p>{t(COMMON.LOADING)}</p>
     </div>;
   }
 
@@ -100,44 +98,44 @@ const MapComponent: React.FC<MapComponentProps> = ({
     ? 'mapbox://styles/mapbox/streets-v11?language=ja' 
     : 'mapbox://styles/mapbox/streets-v11?language=en';
 
-    return (
-      <div className="w-full h-full">
-        <Map
-          mapboxAccessToken={mapboxAccessToken}
-          initialViewState={initialViewState}
-          style={{ width: '100%', height: '100%' }}
-          mapStyle={mapStyle}
-        >
-          {Array.isArray(locations) && locations.map(location => {
-            const totalScore = calculateTotalScore(location);
-            const markerColor = getMarkerColor(totalScore);
-            
-            return (
-              <Marker
-                key={location.id}
-                latitude={location.latitude}
-                longitude={location.longitude}
-                anchor="bottom"
-                onClick={() => onMarkerClick?.(location)}
-              >
-                <div className="relative w-10 h-10 cursor-pointer transform hover:scale-110 transition-transform">
-                  <div className={`absolute inset-0 ${markerColor} rounded-full`} />
-                  <div className="absolute inset-[2px] bg-white rounded-full" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Image 
-                      src={getAssetPath(totalScore >= 300 ? "/rare-toilet.png" : "/toilet.png")}
-                      alt={totalScore >= 300 ? "レアトイレ" : "トイレ"} 
-                      width={24} 
-                      height={24} 
-                    />
-                  </div>
+  return (
+    <div className="w-full h-full">
+      <Map
+        mapboxAccessToken={mapboxAccessToken}
+        initialViewState={initialViewState}
+        style={{ width: '100%', height: '100%' }}
+        mapStyle={mapStyle}
+      >
+        {Array.isArray(locations) && locations.map(location => {
+          const totalScore = calculateTotalScore(location);
+          const markerColor = getMarkerColor(totalScore);
+          
+          return (
+            <Marker
+              key={location.id}
+              latitude={location.latitude}
+              longitude={location.longitude}
+              anchor="bottom"
+              onClick={() => onMarkerClick?.(location)}
+            >
+              <div className="relative w-10 h-10 cursor-pointer transform hover:scale-110 transition-transform">
+                <div className={`absolute inset-0 ${markerColor} rounded-full`} />
+                <div className="absolute inset-[2px] bg-white rounded-full" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Image 
+                    src={getAssetPath(totalScore >= 300 ? "/rare-toilet.png" : "/toilet.png")}
+                    alt={totalScore >= 300 ? t(MAP.RARE_TOILET) : t(MAP.TOILET)} 
+                    width={24} 
+                    height={24} 
+                  />
                 </div>
-              </Marker>
-            );
-          })}
-        </Map>
-      </div>
-    );
-  };
+              </div>
+            </Marker>
+          );
+        })}
+      </Map>
+    </div>
+  );
+};
 
 export default MapComponent;

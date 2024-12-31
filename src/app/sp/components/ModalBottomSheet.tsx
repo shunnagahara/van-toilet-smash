@@ -8,6 +8,8 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import { addToWaitlist } from "@/repository/supabase/waitlist";
 import { checkForMatch, subscribeToMatching, cancelMatching } from "@/repository/supabase/matching";
+import { COMMON, TOILET, MAP } from '@/constants/i18n';
+import type { Language } from '@/constants/i18n';
 import MatchingNotificationBar from './MatchingNotificationBar';
 import CloseButton from './CloseButton';
 import BattleButton from './BattleButton';
@@ -36,12 +38,14 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     error: undefined,
   });
   const [userId, setUserId] = useState<string>("");
-  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage) as Language;
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const router = useRouter();
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  const t = (text: { ja: string; en: string }) => text[currentLanguage];
 
   useEffect(() => {
     let channel: RealtimeChannel;
@@ -52,7 +56,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       if (error) {
         setMatchState(prev => ({ 
           ...prev, 
-          error: error instanceof Error ? error.message : '予期せぬエラーが発生しました'
+          error: error instanceof Error ? error.message : t(COMMON.ERROR_GENERAL)
         }));
         return;
       }
@@ -89,9 +93,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
   }, [matchState.isWaiting, userId, router]);
 
   useEffect(() => {
-    // マッチング状態が変更された時の処理
     if (matchState.isWaiting) {
-      // 少し遅延させてアニメーションを開始
       setTimeout(() => {
         setIsNotificationVisible(true);
       }, 100);
@@ -113,17 +115,13 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       console.error('Error canceling match:', error);
       const newState = {
         ...matchState,
-        error: currentLanguage === 'ja' ? 
-          'キャンセルに失敗しました' : 
-          'Failed to cancel matching'
+        error: t(COMMON.ERROR_CANCEL_FAILED)
       };
       setMatchState(newState);
       onMatchStateChange?.(newState);
     }
   };
 
-
-  // タッチイベントハンドラー
   const handleTouchStart = (e: React.TouchEvent) => {
     e.stopPropagation();
     setTouchStart(e.touches[0].clientY);
@@ -160,7 +158,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
     }
   };
 
-
   const handleBattleRequest = async () => {
     if (!location) return;
   
@@ -182,9 +179,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
       const error = err instanceof Error ? err : new Error('Unknown error occurred');
       const newState = { 
         isWaiting: false, 
-        error: currentLanguage === 'ja' ? 
-          'エラーが発生しました' : 
-          'An error occurred',
+        error: t(COMMON.ERROR_GENERAL),
         detail: error
       };
       setMatchState(newState);
@@ -194,7 +189,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
 
   return (
     <>
-      {/* 待機中の通知バー */}
       <MatchingNotificationBar 
         isVisible={matchState.isWaiting && isNotificationVisible}
         onCancel={handleCancelMatching}
@@ -228,19 +222,19 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                         <PowerRating
                           value={location.attackPower}
                           icon="local_fire_department"
-                          label={currentLanguage === 'ja' ? '攻撃力' : 'Attack'}
+                          label={t(TOILET.STATS_ATTACK)}
                         />
                         <PowerRating
                           value={location.defensePower}
                           icon="shield"
-                          label={currentLanguage === 'ja' ? '防御力' : 'Defense'}
+                          label={t(TOILET.STATS_DEFENSE)}
                         />
                       </div>
                     </div>
                     <div className="flex flex-col items-center mt-4 w-1/3">
                         <ToiletFighterImage
                         src={location.fighterPic}
-                        alt={currentLanguage === 'ja' ? 'トイレファイター' : 'Toilet Fighter'}
+                        alt={t(TOILET.STATS_DETAILS)}
                         width={70}
                         height={70}
                         className={`rounded-full object-cover ${
@@ -267,7 +261,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                       onClick={() => setIsDetailsOpen(!isDetailsOpen)}
                       className="w-full flex items-center justify-between py-2 text-gray-600"
                     >
-                      <span>{currentLanguage === 'ja' ? '詳細情報' : 'Details'}</span>
+                      <span>{t(TOILET.STATS_DETAILS)}</span>
                       <span className="material-icons">
                         {isDetailsOpen ? 'expand_less' : 'expand_more'}
                       </span>
@@ -276,7 +270,6 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
                     {isDetailsOpen && (
                       <div className="space-y-3">
                         <LocationAddress address={location[currentLanguage].address} />
-
 
                         <div className="py-2">
                           <p className="text-gray-700 text-sm">{location[currentLanguage].description}</p>
@@ -299,9 +292,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
             </div>
           ) : (
             <p className="text-center text-gray-500">
-              {currentLanguage === 'ja' ? 
-                'マーカーを選択してください' : 
-                'Please select a marker'}
+              {t(MAP.SELECT_MARKER)}
             </p>
           )}
         </div>
@@ -311,7 +302,7 @@ const ModalBottomSheet: React.FC<ModalBottomSheetProps> = ({ isOpen, toggleSheet
             isOpen={isImageModalOpen}
             onClose={() => setIsImageModalOpen(false)}
             images={location.images}
-          currentLanguage={currentLanguage}
+            currentLanguage={currentLanguage}
         />
       )}
     </>
