@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import MobileConsole from "./components/MobileConsole";
+// import MobileConsole from "./components/MobileConsole";
 
 export default function SPLayout({
   children,
@@ -12,7 +12,7 @@ export default function SPLayout({
   return (
     <div>
       {children}
-      <MobileConsole />
+      {/* <MobileConsole /> */}
     </div>
   );
 }
