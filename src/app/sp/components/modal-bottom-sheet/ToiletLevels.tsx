@@ -66,7 +66,7 @@ const ToiletLevels: React.FC<ToiletLevelsProps> = ({
         <div key={index}>
           <div className="flex justify-between mb-1">
             <span className={`text-base font-medium ${getColorClasses(level.color).split(' ')[0]} dark:text-white`}>
-              {level.label}
+              {level.label} -- debug
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
