@@ -1,6 +1,4 @@
 import React from 'react';
-import { TOILET } from '@/constants/i18n';
-import type { Language } from '@/constants/i18n';
 
 interface ToiletLevelsProps {
   cleanlinessLevel: number;
@@ -8,8 +6,16 @@ interface ToiletLevelsProps {
   crowdingLevel: number;
   toiletCountLevel: number;
   uniquenessLevel: number;
-  currentLanguage: Language;
+  currentLanguage: string;
 }
+
+interface LevelConfig {
+  value: number;
+  color: LevelColor;
+  label: string;
+}
+
+type LevelColor = 'blue' | 'green' | 'red' | 'purple' | 'yellow';
 
 const ToiletLevels: React.FC<ToiletLevelsProps> = ({
   cleanlinessLevel,
@@ -19,62 +25,73 @@ const ToiletLevels: React.FC<ToiletLevelsProps> = ({
   uniquenessLevel,
   currentLanguage
 }) => {
-  const t = (text: { ja: string; en: string }) => text[currentLanguage];
+  // 色に関連するスタイルを別々のオブジェクトとして定義
+  const colorStyles = {
+    blue: {
+      text: 'text-blue-700',
+      bg: 'bg-blue-600'
+    },
+    green: {
+      text: 'text-green-700',
+      bg: 'bg-green-600'
+    },
+    red: {
+      text: 'text-red-700',
+      bg: 'bg-red-600'
+    },
+    purple: {
+      text: 'text-purple-700',
+      bg: 'bg-purple-600'
+    },
+    yellow: {
+      text: 'text-yellow-700',
+      bg: 'bg-yellow-600'
+    }
+  };
 
-  const levels = [
+  const levels: LevelConfig[] = [
     {
       value: cleanlinessLevel,
       color: 'blue',
-      label: t(TOILET.STATS_CLEANLINESS)
+      label: currentLanguage === 'ja' ? '清潔レベル' : 'Cleanliness Level'
     },
     {
       value: locationLevel,
       color: 'green',
-      label: t(TOILET.STATS_LOCATION)
+      label: currentLanguage === 'ja' ? '立地レベル' : 'Location Level'
     },
     {
       value: crowdingLevel,
       color: 'red',
-      label: t(TOILET.STATS_CROWDING)
+      label: currentLanguage === 'ja' ? '混雑レベル' : 'Crowding Level'
     },
     {
       value: toiletCountLevel,
       color: 'purple',
-      label: t(TOILET.STATS_TOILET_COUNT)
+      label: currentLanguage === 'ja' ? '便器数レベル' : 'Toilet Count Level'
     },
     {
       value: uniquenessLevel,
       color: 'yellow',
-      label: t(TOILET.STATS_UNIQUENESS)
+      label: currentLanguage === 'ja' ? 'ユニークレベル' : 'Uniqueness Level'
     }
-  ] as const;
-
-  const getColorClasses = (color: string) => {
-    const colorMap = {
-      blue: 'text-blue-700 bg-blue-600',
-      green: 'text-green-700 bg-green-600',
-      red: 'text-red-700 bg-red-600',
-      purple: 'text-purple-700 bg-purple-600',
-      yellow: 'text-yellow-700 bg-yellow-600'
-    };
-    return colorMap[color as keyof typeof colorMap] || colorMap.blue;
-  };
+  ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-2">
       {levels.map((level, index) => (
         <div key={index}>
-          <div className="flex justify-between items-center mb-1">
-            <div className={`text-base font-medium ${getColorClasses(level.color).split(' ')[0]} dark:text-white`}>
+          <div className="flex justify-between mb-1">
+            <span className={`text-base font-medium ${colorStyles[level.color].text}`}>
               {level.label}
-            </div>
+            </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div 
-              className={`${getColorClasses(level.color).split(' ')[1]} text-xs font-medium text-white text-center p-0.5 leading-none rounded-full`} 
-              style={{width: `${level.value}%`}}
+              className={`${colorStyles[level.color].bg} text-xs font-medium text-white text-center p-0.5 leading-none rounded-full`} 
+              style={{ width: `${level.value}%` }}
             >
-              {level.value}-- debug
+              {level.value}
             </div>
           </div>
         </div>
