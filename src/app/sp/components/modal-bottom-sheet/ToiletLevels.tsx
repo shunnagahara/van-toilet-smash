@@ -61,7 +61,7 @@ const ToiletLevels: React.FC<ToiletLevelsProps> = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-5">
       {levels.map((level, index) => (
         <div key={index}>
           <div className="flex justify-between items-center mb-1">
