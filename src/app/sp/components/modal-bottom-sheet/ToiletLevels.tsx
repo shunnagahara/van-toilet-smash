@@ -74,7 +74,7 @@ const ToiletLevels: React.FC<ToiletLevelsProps> = ({
               className={`${getColorClasses(level.color).split(' ')[1]} text-xs font-medium text-white text-center p-0.5 leading-none rounded-full`} 
               style={{width: `${level.value}%`}}
             >
-              {level.value}
+              {level.value}-- debug
             </div>
           </div>
         </div>
